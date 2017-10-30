@@ -5,6 +5,9 @@ import numpy as np
 import jinja2
 
 def setup_custom_filters(latex_jinja_env):
+    def format_text_exp(value):
+        return "%.2lg"%value
+
     def format_preliminary(value):
         return "\\textcolor{red}{"+str(value)+"}"
 
@@ -83,6 +86,7 @@ def setup_custom_filters(latex_jinja_env):
 
     latex_jinja_env.filters['wrt_t0'] = format_wrt_t0
     latex_jinja_env.filters['latex_exp'] = format_latex_exp
+    latex_jinja_env.filters['text_exp'] = format_text_exp
     latex_jinja_env.filters['erange'] = format_erange
     latex_jinja_env.filters['plusminus'] = format_plusminus
     latex_jinja_env.filters['preliminary'] = format_preliminary
