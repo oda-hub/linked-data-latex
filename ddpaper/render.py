@@ -56,9 +56,10 @@ def render_definitions(latex_jinja_env,keys,data,output_filename=None):
         rtemplate = latex_jinja_env.from_string("\VAR{"+key+"}")
 
         try:
-            value=np.unicode(rtemplate.render(**data)).encode('utf8')
+            value=np.unicode(rtemplate.render(data)).encode('utf8')
         except Exception as e:
             print("unable to render",key,e)
+
             value="XXX"
 
         output+="\\addVAR{"+key+"}{"+value+"}\n"

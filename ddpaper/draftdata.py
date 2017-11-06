@@ -8,7 +8,7 @@ import astropy.units as u
 draft_dir = os.environ.get('INTEGRAL_DDCACHE_ROOT', './draftdata')
 
 
-class DraftData(da.DataAnalysis):
+class DraftData(object):
     def __init__(self, section="results"):
         self.section = section
 
@@ -26,18 +26,22 @@ class DraftData(da.DataAnalysis):
             yaml.dump(self.data, open(draft_dir + "/" + self.section + ".yaml", "w"))
 
 
-def dump_notebook_globals(target):
+def dump_notebook_globals(target,globs):
     from IPython import get_ipython
     ipython = get_ipython()
     s = ipython.magic("who_ls")
 
     with DraftData(target) as t_data:
+        print("storing in",target)
 
         for n in s:
-            v = globals()[n]
+            v = globs[n]
             if isinstance(v, u.Quantity):
                 print(n, v)
-                t_data[n] = {v.unit.to_string().replace(" ", "").strip(): v.value}
+                t_data[n] = {
+                    v.unit.to_string(): v.value,
+                    v.unit.to_string().replace(" ", "").strip(): v.value
+                }
 
             if isinstance(v, float):
                 print(n, v)

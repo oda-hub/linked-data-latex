@@ -5,6 +5,8 @@ import yaml
 import sys
 from dataanalysis import core, importing
 
+import astropy.units as u
+
 core.global_readonly_caches=True
 
 
@@ -43,6 +45,32 @@ def load_data_ddobject(modules, assume, ddobjects, data=None):
         print("loading",ddobject,"with",data[ddobject].keys())
 
     return data
+
+class DynUnitDict(object):
+
+    def __init__(self,data):
+        self.raw_data=data
+
+    def interpret_unit(self,item):
+        try:
+            requested_unit=u.Unit(item)
+        except ValueError:
+            raise
+
+        for key,value  in self.raw_data.items():
+            try:
+                available_unit = u.Unit(key)
+                return value * available_unit.to(requested_unit)
+            except ValueError:
+                continue
+
+
+    def __getitem__(self, item):
+        if item in self.raw_data:
+            return item
+        else:
+            return self.interpret_unit(item)
+
 
 
 def data_assertion(data):
