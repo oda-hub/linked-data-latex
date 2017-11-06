@@ -89,12 +89,15 @@ def setup_custom_filters(latex_jinja_env):
     def format_unit(entry,requested_unit):
         requested_unit = u.Unit(requested_unit)
 
-        for key, value in entry.items():
-            try:
-                available_unit = u.Unit(key)
-                return value * available_unit.to(requested_unit)
-            except ValueError:
-                continue
+        if isinstance(entry,dict):
+            for key, value in entry.items():
+                try:
+                    available_unit = u.Unit(key)
+                    return value * available_unit.to(requested_unit)
+                except ValueError:
+                    continue
+        elif isinstance(entry,u.Quantity):
+            return entry.to(requested_unit).value
 
 
 

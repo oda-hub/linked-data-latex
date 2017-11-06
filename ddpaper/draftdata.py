@@ -27,9 +27,13 @@ class DraftData(object):
 
 
 def dump_notebook_globals(target,globs):
+    import StringIO
     from IPython import get_ipython
     ipython = get_ipython()
     s = ipython.magic("who_ls")
+
+    from ddpaper.data import setup_yaml
+    setup_yaml()
 
     with DraftData(target) as t_data:
         print("storing in",target)
@@ -38,10 +42,20 @@ def dump_notebook_globals(target,globs):
             v = globs[n]
             if isinstance(v, u.Quantity):
                 print(n, v)
-                t_data[n] = {
-                    v.unit.to_string(): v.value,
-                    v.unit.to_string().replace(" ", "").strip(): v.value
-                }
+
+
+                try:
+                    s=StringIO.StringIO()
+                    yaml.dump(v,s)
+                    t_data[n] = v
+                except:
+                    continue
+
+            #    t_data[n] = {
+            #        v.unit.to_string(): v.value,
+            #        v.unit.to_string().replace(" ", "").strip(): v.value,
+            #        "object_type":"astropy units",
+            #    }
 
             if isinstance(v, float):
                 print(n, v)

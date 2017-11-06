@@ -2,6 +2,7 @@ from __future__ import print_function
 
 import sys
 import argparse
+from ddpaper.data import setup_yaml
 from ddpaper.render import get_latex_jinja_env
 from ddpaper.filters import setup_custom_filters
 from ddpaper.data import load_data_directory, load_data_ddobject
@@ -32,6 +33,8 @@ if __name__ == '__main__':
 
     latex_jinja_env=get_latex_jinja_env()
     setup_custom_filters(latex_jinja_env)
+
+    setup_yaml()
 
     data=load_data_directory(args.data)
     data=load_data_ddobject(args.modules,args.assume,args.load,data)

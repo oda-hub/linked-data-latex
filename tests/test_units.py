@@ -38,3 +38,53 @@ def test_render_units():
     print("rendering", rendering)
 
     assert rendering == b"36"
+
+
+def test_units_unpickle():
+    from ddpaper.data import setup_yaml
+
+    from astropy import units as u
+    import yaml
+    import StringIO
+
+    setup_yaml()
+
+    s=StringIO.StringIO()
+    r=dict(var=1*u.keV)
+    yaml.dump(r,s)
+    s.seek(0)
+    rr=yaml.load(s)
+
+    print r
+    print rr
+
+    assert r==rr
+
+
+    import ddpaper.render as render
+
+    latex_jinja_env = render.get_latex_jinja_env()
+
+    ddict={'test_var':1*u.keV,'duration':1*u.s}
+
+    rendering=render.render_draft(
+                        latex_jinja_env,
+                        ddict,
+                        input_template_string="\VAR{test_var|u('erg')}",
+                        write_header=False,
+                    )
+
+    print("rendering",rendering)
+
+    assert rendering == b"1.602176565e-09"
+
+    rendering=render.render_draft(
+                        latex_jinja_env,
+                        ddict,
+                        input_template_string="\VAR{(test_var/duration)|u('erg/year')}",
+                        write_header=False,
+                    )
+
+    print("rendering",rendering)
+
+    assert rendering == b"0.0505608471676"

@@ -3,9 +3,11 @@ from __future__ import print_function
 import glob
 import yaml
 import sys
+import re
 from dataanalysis import core, importing
 
 import astropy.units as u
+import astropy.constants as const
 
 core.global_readonly_caches=True
 
@@ -70,6 +72,28 @@ class DynUnitDict(object):
             return DynUnitDict(self.raw_data[item])
         else:
             return self.interpret_unit(item)
+
+
+def setup_yaml():
+
+    def quantity_constructor(loader, node):
+        value = loader.construct_scalar(node)
+        value, unit = re.search("(.*?)__(.*)", value).groups()
+        return u.Quantity(value, unit=u.Unit(unit))
+
+    def quantity_representer(dumper, data):
+        return dumper.represent_scalar(u'!Quantity', u'%.5lg__%s' % (data.value, data.unit.to_string()))
+
+    def unit_representer(dumper, data):
+        return dumper.represent_scalar(u'!Quantity', u'%.5lg__%s' % (1., data.unit.to_string()))
+
+    def const_representer(dumper, data):
+        return dumper.represent_scalar(u'!Quantity', u'%.5lg__%s' % (data.value, data.unit.to_string()))
+
+    yaml.add_representer(u.Quantity, quantity_representer)
+    yaml.add_representer(const.Constant, quantity_representer)
+    yaml.add_representer(u.Unit, unit_representer)
+    yaml.add_constructor('!Quantity', quantity_constructor)
 
 
 
