@@ -67,7 +67,7 @@ class DynUnitDict(object):
 
     def __getitem__(self, item):
         if item in self.raw_data:
-            return item
+            return DynUnitDict(self.raw_data[item])
         else:
             return self.interpret_unit(item)
 

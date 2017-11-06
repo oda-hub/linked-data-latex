@@ -3,6 +3,8 @@ from __future__ import print_function
 
 import numpy as np
 import jinja2
+import astropy.units as u
+
 
 def setup_custom_filters(latex_jinja_env):
     def format_text_exp(value):
@@ -84,6 +86,18 @@ def setup_custom_filters(latex_jinja_env):
     def format_utc(value):
         return value.replace("T"," ")[:19]
 
+    def format_unit(entry,requested_unit):
+        requested_unit = u.Unit(requested_unit)
+
+        for key, value in entry.items():
+            try:
+                available_unit = u.Unit(key)
+                return value * available_unit.to(requested_unit)
+            except ValueError:
+                continue
+
+
+
     latex_jinja_env.filters['wrt_t0'] = format_wrt_t0
     latex_jinja_env.filters['latex_exp'] = format_latex_exp
     latex_jinja_env.filters['text_exp'] = format_text_exp
@@ -91,3 +105,5 @@ def setup_custom_filters(latex_jinja_env):
     latex_jinja_env.filters['plusminus'] = format_plusminus
     latex_jinja_env.filters['preliminary'] = format_preliminary
     latex_jinja_env.filters['format_utc'] = format_utc
+    latex_jinja_env.filters['unit'] = format_unit
+    latex_jinja_env.filters['u'] = format_unit
