@@ -7,6 +7,7 @@ from ddpaper.filters import setup_custom_filters
 from ddpaper.data import load_data_directory, load_data_ddobject
 from ddpaper.render import render_definitions, render_draft, extract_referenced_keys
 
+from dataanalysis import core, importing
 
 
 if __name__ == '__main__':
@@ -21,9 +22,13 @@ if __name__ == '__main__':
                         action='append', default=[])
     parser.add_argument('-l', dest='load', metavar='LOAD', type=str, help='...', nargs='+', action='append',
                         default=[])
+    parser.add_argument("-w","--write-caches", dest="writecaches", action='store_true', default=False)
+
 
     args=parser.parse_args()
 
+    if args.writecaches:
+        core.global_readonly_caches = False
 
     latex_jinja_env=get_latex_jinja_env()
     setup_custom_filters(latex_jinja_env)
