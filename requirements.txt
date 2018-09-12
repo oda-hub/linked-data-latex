@@ -1,2 +1,3 @@
 jinja2
 pyyaml
+-e git://github.com/volodymyrss/data-analysis.git
