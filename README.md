@@ -15,4 +15,4 @@ features:
 * automatic handling of physical units
 * reading data from yaml
 * reading data from workflow data
-
+* integration with a Jupyter notebooks
