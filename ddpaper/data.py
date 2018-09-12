@@ -5,9 +5,12 @@ import yaml
 import sys
 import re
 from dataanalysis import core, importing
+from dataanalysis.displaygraph import dotify_hashe
 
 import astropy.units as u
 import astropy.constants as const
+
+import pydot
 
 core.global_readonly_caches=True
 
@@ -42,9 +45,21 @@ def load_data_ddobject(modules, assume, ddobjects, data=None):
     if data is None:
         data = {}
 
+    graph=pydot.Dot(graph_type='digraph', splines='ortho' )
+    doc_root="Paper"
+    graph.add_node(pydot.Node(doc_root, style="filled", fillcolor="green", shape="box"))
+
     for ddobject, in ddobjects:
-        data[ddobject]=core.AnalysisFactory.byname(ddobject).get().export_data(include_class_attributes=True)
+        obj=core.AnalysisFactory.byname(ddobject)
+        obj.datafile_restore_mode = 'url_in_object'
+        obj=obj.get()
+        data[ddobject]=obj.export_data(include_class_attributes=True)
         print("loading",ddobject,"with",data[ddobject].keys())
+
+        graph,root_node=dotify_hashe(obj._da_locally_complete,graph=graph,return_root=True)
+        graph.add_edge(pydot.Edge(root_node, doc_root))
+
+    graph.write_png("paper_hashe.png")
 
     return data
 
