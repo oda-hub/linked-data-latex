@@ -23,7 +23,7 @@ def test_render_units():
 
     print("rendering",rendering)
 
-    assert rendering == b"1.602176565e-09"
+    assert rendering == b"1.6021766208e-09"
 
 
     ddict = {'test_var': {'m/s': 10}}
@@ -76,7 +76,7 @@ def test_units_unpickle():
 
     print("rendering",rendering)
 
-    assert rendering == b"1.602176565e-09"
+    assert rendering == b"1.6021766208e-09"
 
     rendering=render.render_draft(
                         latex_jinja_env,
@@ -87,4 +87,4 @@ def test_units_unpickle():
 
     print("rendering",rendering)
 
-    assert rendering == b"0.0505608471676"
+    assert rendering == b"0.0505608489286"
