@@ -55,8 +55,8 @@ def test_units_unpickle():
     s.seek(0)
     rr=yaml.load(s)
 
-    print r
-    print rr
+    print(r)
+    print(rr)
 
     assert r==rr
 
