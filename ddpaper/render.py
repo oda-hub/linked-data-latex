@@ -7,7 +7,7 @@ import jinja2
 import numpy as np
 from jinja2.utils import concat
 
-from filters import setup_custom_filters
+from ddpaper.filters import setup_custom_filters
 
 def get_latex_jinja_env():
     env=jinja2.Environment(

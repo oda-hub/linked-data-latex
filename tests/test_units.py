@@ -17,13 +17,13 @@ def test_render_units():
     rendering=render.render_draft(
                         latex_jinja_env,
                         ddict,
-                        input_template_string="\VAR{test_var|u('erg')}",
+                        input_template_string="\VAR{test_var|u('erg')|round(15)}",
                         write_header=False,
                     )
 
     print("rendering",rendering)
 
-    assert rendering == b"1.6021766208e-09"
+    assert rendering == b"1.602177e-09"
 
 
     ddict = {'test_var': {'m/s': 10}}
@@ -45,11 +45,15 @@ def test_units_unpickle():
 
     from astropy import units as u
     import yaml
-    import StringIO
+
+    try:
+        from StringIO import StringIO
+    except ImportError:
+        from io import StringIO
 
     setup_yaml()
 
-    s=StringIO.StringIO()
+    s=StringIO()
     r=dict(var=1*u.keV)
     yaml.dump(r,s)
     s.seek(0)
@@ -70,21 +74,21 @@ def test_units_unpickle():
     rendering=render.render_draft(
                         latex_jinja_env,
                         ddict,
-                        input_template_string="\VAR{test_var|u('erg')}",
+                        input_template_string="\VAR{test_var|u('erg')|round(15)}",
                         write_header=False,
                     )
 
     print("rendering",rendering)
 
-    assert rendering == b"1.6021766208e-09"
+    assert rendering == b"1.602177e-09"
 
     rendering=render.render_draft(
                         latex_jinja_env,
                         ddict,
-                        input_template_string="\VAR{(test_var/duration)|u('erg/year')}",
+                        input_template_string="\VAR{(test_var/duration)|u('erg/year')|round(5)}",
                         write_header=False,
                     )
 
     print("rendering",rendering)
 
-    assert rendering == b"0.0505608489286"
+    assert rendering == b"0.05056"
