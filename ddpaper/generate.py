@@ -9,9 +9,11 @@ from ddpaper.data import load_data_directory, load_data_ddobject
 from ddpaper.render import render_definitions, render_draft, extract_referenced_keys
 
 try:
-    from dataanalysis import core, importing
+    from dataanalysis import core
+    dda_available=True
 except ImportError:
     print("WARNING: no DDA")
+    dda_available=False
 
 
 if __name__ == '__main__':
@@ -31,7 +33,7 @@ if __name__ == '__main__':
 
     args=parser.parse_args()
 
-    if args.writecaches:
+    if args.writecaches and dda_available:
         core.global_readonly_caches = False
 
     latex_jinja_env=get_latex_jinja_env()

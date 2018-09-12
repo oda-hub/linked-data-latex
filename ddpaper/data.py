@@ -8,6 +8,8 @@ import re
 try:
     from dataanalysis import core, importing
     from dataanalysis.displaygraph import dotify_hashe
+
+    core.global_readonly_caches=True
 except ImportError:
     print("WARNING: no DDA")
 
@@ -16,7 +18,6 @@ import astropy.constants as const
 
 import pydot
 
-core.global_readonly_caches=True
 
 
 def load_data_directory(rootdir="./data",data=None):

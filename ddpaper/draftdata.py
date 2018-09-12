@@ -1,6 +1,5 @@
 # from collections import defaultdict
 
-import dataanalysis.core as da
 import yaml
 import os
 import astropy.units as u
