@@ -12,5 +12,6 @@ features:
 * based on [Jinja2](http://jinja.pocoo.org/docs/2.10/)
 * seamless [Latex](https://www.latex-project.org/about/) integration
 * an alternative mode to generate any text-based format (e.g. for GCN, ATel, VOEvent, etc)
-
+* reading data from yaml
+* reading data from workflow data
 
