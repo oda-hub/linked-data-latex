@@ -4,8 +4,12 @@ import glob
 import yaml
 import sys
 import re
-from dataanalysis import core, importing
-from dataanalysis.displaygraph import dotify_hashe
+
+try:
+    from dataanalysis import core, importing
+    from dataanalysis.displaygraph import dotify_hashe
+except ImportError:
+    print("WARNING: no DDA")
 
 import astropy.units as u
 import astropy.constants as const

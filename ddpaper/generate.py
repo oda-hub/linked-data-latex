@@ -8,7 +8,10 @@ from ddpaper.filters import setup_custom_filters
 from ddpaper.data import load_data_directory, load_data_ddobject
 from ddpaper.render import render_definitions, render_draft, extract_referenced_keys
 
-from dataanalysis import core, importing
+try:
+    from dataanalysis import core, importing
+except ImportError:
+    print("WARNING: no DDA")
 
 
 if __name__ == '__main__':
