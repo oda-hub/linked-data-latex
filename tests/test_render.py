@@ -13,7 +13,7 @@ def test_render():
 
     print("rendering",rendering)
 
-    assert rendering == b"1"
+    assert rendering == "1"
 
 def test_render_filter():
     import ddpaper.render as render
@@ -31,4 +31,4 @@ def test_render_filter():
 
     print("rendering",rendering)
 
-    assert rendering == b"1.4$\\times$10$^{-4}$"
+    assert rendering == "1.4$\\times$10$^{-4}$"

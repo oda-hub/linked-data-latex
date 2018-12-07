@@ -1,9 +1,11 @@
-from __future__ import print_function
-
 import glob
 import yaml
 import sys
 import re
+
+import logging
+
+logger = logging.getLogger("ddpaper.data")
 
 try:
     from dataanalysis import core, importing
@@ -11,7 +13,7 @@ try:
 
     core.global_readonly_caches=True
 except ImportError:
-    print("WARNING: no DDA")
+    logger.warning("no DDA")
 
 import astropy.units as u
 import astropy.constants as const
@@ -23,12 +25,14 @@ import pydot
 def load_data_directory(rootdir="./data",data=None):
     if data is None:
         data={}
+        
+    logger.info("loading data from rootdir %s",rootdir)
 
-    for fn in glob.glob(rootdir+"/*.yaml"):
-        key=fn.replace(rootdir+"/","").replace(".yaml","")
-        data[key]=yaml.load(open(fn))
-        print("rootdir",rootdir)
-        print("loading data",fn,key)
+    for suffix in ".yaml", ".yml":
+        for fn in glob.glob(rootdir+"/*"+suffix):
+            key=fn.replace(rootdir+"/","").replace(suffix,"")
+            logger.info("loading data from %s as %s",fn,key)
+            data[key]=yaml.load(open(fn))
     return data
 
 
@@ -36,7 +40,7 @@ def load_data_ddobject(modules, assume, ddobjects, data=None):
 #    app.jinja_env.globals.update(clever_function=clever_function)
 
     for m, in modules:
-        print("importing", m)
+        logger.info("importing", m)
 
         sys.path.append(".")
         module, name = importing.load_by_name(m)
@@ -44,7 +48,7 @@ def load_data_ddobject(modules, assume, ddobjects, data=None):
 
     if len(assume) > 0:
         assumptions = ",".join([a[0] for a in assume])
-        print(assumptions)
+        logger.info(assumptions)
         core.AnalysisFactory.WhatIfCopy('commandline', eval(assumptions))
 
     if data is None:
@@ -59,7 +63,7 @@ def load_data_ddobject(modules, assume, ddobjects, data=None):
         obj.datafile_restore_mode = 'url_in_object'
         obj=obj.get()
         data[ddobject]=obj.export_data(include_class_attributes=True)
-        print("loading",ddobject,"with",data[ddobject].keys())
+        logger.info("loading",ddobject,"with",data[ddobject].keys())
 
         graph,root_node=dotify_hashe(obj._da_locally_complete,graph=graph,return_root=True)
         graph.add_edge(pydot.Edge(root_node, doc_root))
@@ -122,4 +126,4 @@ def data_assertion(data):
         import assert_data
         assert_data.assert_draft_data(data)
     except ImportError:
-        print("no data assertion: all data is meaningfull")
+        logger.info("no data assertion: all data is meaningfull")

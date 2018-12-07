@@ -4,6 +4,10 @@ import yaml
 import os
 import astropy.units as u
 
+import logging
+
+logger = logging.getLogger('ddpaper.draftdata')
+
 draft_dir = os.environ.get('INTEGRAL_DDCACHE_ROOT', './draftdata')
 
 
@@ -35,12 +39,12 @@ def dump_notebook_globals(target,globs):
     setup_yaml()
 
     with DraftData(target) as t_data:
-        print("storing in",target)
+        logger.info("storing in",target)
 
         for n in s:
             v = globs[n]
             if isinstance(v, u.Quantity):
-                print(n, v)
+                logger.info(n, v)
 
 
                 try:
@@ -57,6 +61,6 @@ def dump_notebook_globals(target,globs):
             #    }
 
             if isinstance(v, float):
-                print(n, v)
+                logger.info(n, v)
                 t_data[n] = v
 
