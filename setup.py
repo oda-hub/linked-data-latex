@@ -7,15 +7,19 @@ def read(fname):
 setup(
     name = "rich-draft-templating",
     version = "0.1.1",
-    author = "V.S.",
-    #author_email = "andrewjcarter@gmail.com",
-    ##description = (""),
+    author = "Volodymyr Savchenko",
+    author_email = "contact@volodymyrsavchenko.com",
+    description = (""),
     license = "BSD",
     packages=['ddpaper'],
-    #long_description=read('README.md'),
+    long_description=read('README.md'),
+    entry_points = {
+        'console_scripts': [
+            'ddpaper=ddpaper.generate:main'
+        ],
+    },
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Topic :: Utilities",
-        "License :: OSI Approved :: BSD License",
     ],
 )

@@ -18,7 +18,7 @@ def setup_custom_filters(latex_jinja_env):
             return "~+~%.2lg"%abs(value)
         return "~-~%.2lg"%abs(value)
 
-    def format_plusminus(value,ct=2):
+    def format_plusminus(value,ct=2,cte=1):
         if np.log10(value['mean'])>3 or np.log10(value['mean'])<-2:
             value['scale_log10']=int(np.log10(value['mean']))
             if value['scale_log10']<0:
@@ -29,9 +29,9 @@ def setup_custom_filters(latex_jinja_env):
                     value[v]=value[v]/10**value['scale_log10']
 
         if 'stat_err' in value:
-            r = ("%%.%ilg~$\pm$~%%.%ilg"%(ct,ct))%(value['mean'],value['stat_err'])
+            r = ("%%.%ilf~$\pm$~%%.%ilg"%(ct,cte))%(value['mean'],value['stat_err'])
         else:
-            r = ("%%.%ilg\\small$^{+%%.%ilg}_{-%%.%ilg}$\\normalsize"%(ct,ct,ct))%(value['mean'],value['stat_err_plus'],value['stat_err_minus'])
+            r = ("%%.%ilf\\small$^{+%%.%ilg}_{-%%.%ilg}$\\normalsize"%(ct,cte,cte))%(value['mean'],value['stat_err_plus'],value['stat_err_minus'])
 
         if 'scale_log10' in value:
             r+="$ \\times 10^{%i}$"%value['scale_log10']

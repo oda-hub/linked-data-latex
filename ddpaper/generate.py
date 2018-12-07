@@ -16,7 +16,7 @@ except ImportError:
     dda_available=False
 
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("input",default="main.tex")
     parser.add_argument("output",default="definitions.tex")
@@ -54,3 +54,6 @@ if __name__ == '__main__':
                            extract_referenced_keys(args.input),
                            data,
                            output_filename=args.output)
+
+if __name__ == '__main__':
+    main()

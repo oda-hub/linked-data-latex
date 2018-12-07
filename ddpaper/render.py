@@ -29,7 +29,7 @@ def get_latex_jinja_env():
 
 def extract_referenced_keys(draft_filename):
     reduced=[]
-    for k in re.findall("\\VAR{(.*?)}", open(draft_filename).read()):
+    for k in re.findall("\\\\VAR{(.*?)}", open(draft_filename).read()):
         if not k in reduced:
             print("found",k)
             reduced.append(k)

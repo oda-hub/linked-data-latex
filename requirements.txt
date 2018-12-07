@@ -5,3 +5,4 @@ numpy
 astropy
 pydot
 PyYAML
+pydot
