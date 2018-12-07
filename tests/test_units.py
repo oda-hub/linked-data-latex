@@ -16,8 +16,8 @@ def test_render_units():
 
     rendering=render.render_draft(
                         latex_jinja_env,
+                        "\VAR{test_var|u('erg')|round(15)}",
                         ddict,
-                        input_template_string="\VAR{test_var|u('erg')|round(15)}",
                         write_header=False,
                     )
 
@@ -30,8 +30,8 @@ def test_render_units():
 
     rendering = render.render_draft(
         latex_jinja_env,
+        "\VAR{test_var|u('km/hour')|int}",
         ddict,
-        input_template_string="\VAR{test_var|u('km/hour')|int}",
         write_header=False,
     )
 
@@ -73,8 +73,8 @@ def test_units_unpickle():
 
     rendering=render.render_draft(
                         latex_jinja_env,
+                        "\VAR{test_var|u('erg')|round(15)}",
                         ddict,
-                        input_template_string="\VAR{test_var|u('erg')|round(15)}",
                         write_header=False,
                     )
 
@@ -84,8 +84,8 @@ def test_units_unpickle():
 
     rendering=render.render_draft(
                         latex_jinja_env,
+                        "\VAR{(test_var/duration)|u('erg/year')|round(5)}",
                         ddict,
-                        input_template_string="\VAR{(test_var/duration)|u('erg/year')|round(5)}",
                         write_header=False,
                     )
 

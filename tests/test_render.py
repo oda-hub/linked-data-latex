@@ -6,8 +6,8 @@ def test_render():
 
     rendering=render.render_draft(
                         latex_jinja_env,
+                        "\VAR{test_var}",
                         {'test_var':1},
-                        input_template_string="\VAR{test_var}",
                         write_header=False,
                     )
 
@@ -24,8 +24,8 @@ def test_render_filter():
 
     rendering=render.render_draft(
                         latex_jinja_env,
+                        "\VAR{test_var|latex_exp}",
                         {'test_var':1.4123e-4},
-                        input_template_string="\VAR{test_var|latex_exp}",
                         write_header=False,
                     )
 

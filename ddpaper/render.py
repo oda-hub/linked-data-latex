@@ -112,7 +112,7 @@ def render_definitions(latex_jinja_env,template_string,data):
     return output
 
 
-def render_draft(latex_jinja_env,template_string,data,write_header=True):
+def render_draft(latex_jinja_env, template_string, data, write_header=True):
     re_var = re.compile(r"\\VAR{(.*?)==(.*?)}")
 
     draft_vars = re_var.findall(template_string)
@@ -134,7 +134,9 @@ def render_draft(latex_jinja_env,template_string,data,write_header=True):
     else:
         header=""
 
-    raw_render=concat(template.root_render_func(template.new_context(data,shared=False)))
+    raw_render=concat(
+        template.root_render_func(template.new_context(data,shared=False))
+    )
 
     rendering=np.unicode(header+raw_render) 
 
@@ -163,3 +165,5 @@ def render_validate(latex_jinja_env,template_string,data):
     for l_key, key, value in template_data:
         d_value = compute_value(latex_jinja_env, key, data)
         logger.info("key: %s value %s: new value: %s"%(key, value, d_value))
+
+    return ""

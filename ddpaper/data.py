@@ -2,6 +2,7 @@ import glob
 import yaml
 import sys
 import re
+import os
 
 import logging
 
@@ -30,7 +31,7 @@ def load_data_directory(rootdir="./data",data=None):
 
     for suffix in ".yaml", ".yml":
         for fn in glob.glob(rootdir+"/*"+suffix):
-            key=fn.replace(rootdir+"/","").replace(suffix,"")
+            key=os.path.normpath(fn).replace(rootdir+"/","").replace(suffix,"")
             logger.info("loading data from %s as %s",fn,key)
             data[key]=yaml.load(open(fn))
     return data
