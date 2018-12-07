@@ -19,7 +19,7 @@ except ImportError:
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("input",default="main.tex")
-    parser.add_argument("output",default="definitions.tex")
+    parser.add_argument("-o","--output",default="-")
     parser.add_argument("-d","--data",default="./data")
     parser.add_argument("--draft",action='store_true',default=False)
     parser.add_argument('-a', dest='assume', metavar='ASSUME', type=str, help='...', nargs='+', action='append',
@@ -45,15 +45,20 @@ def main():
     data=load_data_ddobject(args.modules,args.assume,args.load,data)
 
     if args.draft:
-        render_draft(latex_jinja_env,
+        output = render_draft(latex_jinja_env,
                            data,
-                           args.input,
-                           output_filename=args.output)
+                           args.input)
     else:
-        render_definitions(latex_jinja_env,
+        output = render_definitions(latex_jinja_env,
                            extract_referenced_keys(args.input),
-                           data,
-                           output_filename=args.output)
+                           data)
+
+    if args.output == "-":
+        print(output)
+    else:
+        with open(args.output, "w") as output_file:
+            output_file.write(output)
+
 
 if __name__ == '__main__':
     main()
