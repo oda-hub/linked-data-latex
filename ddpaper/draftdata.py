@@ -17,7 +17,7 @@ class DraftData(object):
 
     def __enter__(self):
         try:
-            self.data = yaml.load(open(draft_dir + "/" + self.section + ".yaml"))
+            self.data = yaml.safe_load(open(draft_dir + "/" + self.section + ".yaml"))
         except:
             self.data = {}
         if self.data is None:
