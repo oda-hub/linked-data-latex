@@ -17,14 +17,14 @@ class DraftData(object):
 
     def __enter__(self):
         try:
-            self.data = yaml.safe_load(open(draft_dir + "/" + self.section + ".yaml"))
+            self.data = yaml.load(open(draft_dir + "/" + self.section + ".yaml"))
         except:
             self.data = {}
         if self.data is None:
             self.data = {}
         return self.data
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, _type, value, traceback):
         if self.data is not None:
             yaml.dump(self.data, open(draft_dir + "/" + self.section + ".yaml", "w"))
 

@@ -15,13 +15,13 @@ from ddpaper.filters import setup_custom_filters
 
 def get_latex_jinja_env():
     env=jinja2.Environment(
-            block_start_string = '\BLOCK{',
+            block_start_string = r'\BLOCK{',
             block_end_string = '}',
-            variable_start_string = '\VAR{',
+            variable_start_string = r'\VAR{',
             variable_end_string = '}',
-            comment_start_string = '\#{',
+            comment_start_string = r'\#{',
             comment_end_string = '}',
-            line_statement_prefix = '%%\LINE',
+            line_statement_prefix = r'%%\LINE',
             line_comment_prefix = '%#',
             trim_blocks = True,
             autoescape = False,

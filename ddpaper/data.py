@@ -33,7 +33,7 @@ def load_data_directory(rootdir="./data",data=None):
         for fn in glob.glob(rootdir+"/*"+suffix):
             key=os.path.normpath(fn).replace(rootdir+"/","").replace(suffix,"")
             logger.info("loading data from %s as %s",fn,key)
-            data[key]=yaml.safe_load(open(fn))
+            data[key]=yaml.load(open(fn))
     return data
 
 
@@ -41,7 +41,7 @@ def load_data_ddobject(modules, assume, ddobjects, data=None):
 #    app.jinja_env.globals.update(clever_function=clever_function)
 
     for m, in modules:
-        logger.info("importing", m)
+        logger.info("importing %s", m)
 
         sys.path.append(".")
         module, name = importing.load_by_name(m)
@@ -64,7 +64,7 @@ def load_data_ddobject(modules, assume, ddobjects, data=None):
         obj.datafile_restore_mode = 'url_in_object'
         obj=obj.get()
         data[ddobject]=obj.export_data(include_class_attributes=True)
-        logger.info("loading",ddobject,"with",data[ddobject].keys())
+        logger.info("loading %s with %s",ddobject,data[ddobject].keys())
 
         graph,root_node=dotify_hashe(obj._da_locally_complete,graph=graph,return_root=True)
         graph.add_edge(pydot.Edge(root_node, doc_root))

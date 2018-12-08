@@ -6,7 +6,7 @@ def test_render():
 
     rendering=render.render_draft(
                         latex_jinja_env,
-                        "\VAR{test_var}",
+                        r"\VAR{test_var}",
                         {'test_var':1},
                         write_header=False,
                     )
@@ -24,7 +24,7 @@ def test_render_filter():
 
     rendering=render.render_draft(
                         latex_jinja_env,
-                        "\VAR{test_var|latex_exp}",
+                        r"\VAR{test_var|latex_exp}",
                         {'test_var':1.4123e-4},
                         write_header=False,
                     )
