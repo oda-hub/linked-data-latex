@@ -14,7 +14,7 @@ import coloredlogs
 
 logger = logging.getLogger('ddpaper.generate')
 
-coloredlogs.install(level='DEBUG')
+coloredlogs.install(level='DEBUG',fmt='%(asctime)s %(hostname)s %(name)20s[%(process)d] %(levelname)10s %(message)s')
 
 try:
     from dataanalysis import core
