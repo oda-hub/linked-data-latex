@@ -97,6 +97,8 @@ def main():
         with open(args.output, "w") as output_file:
             output_file.write(output)
 
+    # bind dda, json, sources
+
 
 if __name__ == '__main__':
     main()
