@@ -4,5 +4,5 @@ Django
 numpy
 astropy
 pydot
-PyYAML
+ruamel.yaml
 pydot
