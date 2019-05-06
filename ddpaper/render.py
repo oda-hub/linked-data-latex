@@ -88,9 +88,9 @@ def render_definitions(latex_jinja_env,template_string,data):
     \expandafter\ERROR
   \\fi
 }
-\def\DATA#2{%
-  \ifcsname my@data@\detokenize{#2}\endcsname
-    \csname my@data@\detokenize{#2}\expandafter\endcsname
+\def\DATA#1{%
+  \ifcsname my@data@\detokenize{#1}\endcsname
+    \csname my@data@\detokenize{#1}\expandafter\endcsname
   \else
     \expandafter\ERROR
   \\fi
