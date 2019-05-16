@@ -164,6 +164,9 @@ def render_validate(latex_jinja_env,template_string,data):
 
     for l_key, key, value in template_data:
         d_value = compute_value(latex_jinja_env, key, data)
-        logger.info("key: %s value %s: new value: %s"%(key, value, d_value))
+        logger.info("key: %s value: \"%s\", new value: \"%s\""%(key, value, d_value))
+
+        if value is not None and value != d_value:
+            raise RuntimeError("invalid! key: %s value %s: new value: %s"%(key, value, d_value))
 
     return ""
