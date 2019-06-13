@@ -109,11 +109,15 @@ def load_modules_in_env(latex_jinja_env, key):
 
         latex_jinja_env.globals['local'] = AttrDict(**{module_name: module})
 
+        return module_name+"."+remainder
+
+    return key
+
 
 def compute_value(latex_jinja_env, key, data):
-    load_modules_in_env(latex_jinja_env, key)
+    newkey = load_modules_in_env(latex_jinja_env, key)
 
-    rtemplate = latex_jinja_env.from_string("\VAR{"+module_name+"."+remainder+"}")
+    rtemplate = latex_jinja_env.from_string("\VAR{"+newkey+"}")
 
     try:
         d_value=np.unicode(rtemplate.render(data)) #.encode('utf8')

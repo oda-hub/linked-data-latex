@@ -88,7 +88,7 @@ def test_render_loaded():
 
     rendering=render.render_draft(
                         latex_jinja_env,
-                        r"\VAR{.gcn.cite(100)}",
+                        r"\VAR{local.gcn.cite(100)}",
                         {'test_var':1.4123e-4},
                         write_header=False,
                     )
