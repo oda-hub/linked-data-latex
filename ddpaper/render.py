@@ -172,6 +172,20 @@ def render_definitions(latex_jinja_env,template_string,data):
 
     return output
 
+def preproc_template(template_string):
+    logger.info("preprocessing template %s", template_string)
+
+    re_preproc = re.compile(r"^.*?PREPROC (.*?) TO (.*?)\n", re.M)
+
+    for re_in, re_out in re_preproc.findall(template_string):
+        logger.info('applying preproc %s => %s', re_in, re_out)
+        template_string = re.sub(re_in, re_out, template_string)
+
+    template_string = re_preproc.sub("", template_string)
+
+    logger.info("preproc yeilds %s", template_string)
+
+    return template_string
 
 def render_draft(latex_jinja_env, template_string, data, write_header=True):
     re_var = re.compile(r"\\VAR{(.*?)==(.*?)}")
@@ -179,6 +193,8 @@ def render_draft(latex_jinja_env, template_string, data, write_header=True):
     draft_vars = re_var.findall(template_string)
     for k, v in draft_vars:
         logger.info("draft var: %s %s",k,v)
+    
+    template_string = preproc_template(template_string)
 
     ready_template = re_var.sub(r"\\VAR{\1}", template_string)
     

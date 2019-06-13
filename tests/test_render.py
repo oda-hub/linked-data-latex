@@ -96,3 +96,21 @@ def test_render_loaded():
     print("rendering",rendering)
 
     assert rendering == "Hurley1998_gcn100"
+
+def test_render_loaded_preproc():
+    import ddpaper.render as render
+    import ddpaper.filters as filters
+
+    latex_jinja_env = render.get_latex_jinja_env()
+    filters.setup_custom_filters(latex_jinja_env)
+
+    rendering=render.render_draft(
+                        latex_jinja_env,
+                        r"% PREPROC \\citepgcn{(.*?)} TO \\VAR{local.gcn.cite(\1)}"+"\n"+r"\citepgcn{100}",
+                        {'test_var':1.4123e-4},
+                        write_header=False,
+                    )
+
+    print("rendering",rendering)
+
+    assert rendering == "Hurley1998_gcn100"
