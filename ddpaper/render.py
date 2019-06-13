@@ -109,7 +109,7 @@ def load_modules_in_env(latex_jinja_env, key):
 
         latex_jinja_env.globals['local'] = AttrDict(**{module_name: module})
 
-        return module_name+"."+remainder
+        return key #module_name+"."+remainder
 
     return key
 
