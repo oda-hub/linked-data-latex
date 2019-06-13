@@ -117,6 +117,8 @@ def load_modules_in_env(latex_jinja_env, key):
 def compute_value(latex_jinja_env, key, data):
     newkey = load_modules_in_env(latex_jinja_env, key)
 
+    logger.info('compute value for key %s', newkey)
+
     rtemplate = latex_jinja_env.from_string("\VAR{"+newkey+"}")
 
     try:
@@ -156,6 +158,13 @@ def render_definitions(latex_jinja_env,template_string,data):
 % extracted definitions
 
 """
+
+    template_string, preprocs = preproc_template(template_string)
+
+    preprocs_dict = dict(preprocs)
+
+    print("preprocs dict", preprocs_dict)
+
     template_data = extract_template_data(template_string)
 
     output=header
@@ -168,7 +177,15 @@ def render_definitions(latex_jinja_env,template_string,data):
 
         logger.debug("key: %s, value: %s; long key: %s; data value %s"%(key, value, l_key, d_value))
 
-        output+=r"\addVAR{"+l_key+"}{"+d_value+"}\n"
+        nref = 0
+        for k,v in preprocs_dict.items():
+            if l_key == v:
+                output+=r"\addVAR{"+k+"}{"+d_value+"}\n"
+                nref += 1
+
+        if nref == 0:
+            output+=r"\addVAR{"+l_key+"}{"+d_value+"}\n"
+    
 
     return output
 
@@ -177,15 +194,26 @@ def preproc_template(template_string):
 
     re_preproc = re.compile(r"^.*?PREPROC (.*?) TO (.*?)\n", re.M)
 
+    preprocs = []
+
     for re_in, re_out in re_preproc.findall(template_string):
         logger.info('applying preproc %s => %s', re_in, re_out)
+
+        for g in re.findall("("+re_in+")", template_string):
+            f_re_in = g[0]
+            logger.info("found preproc target %s", f_re_in)
+
+            f_re_out = re.sub(re_in, re_out, f_re_in)
+
+            preprocs.append((f_re_in, f_re_out))
+
         template_string = re.sub(re_in, re_out, template_string)
 
     template_string = re_preproc.sub("", template_string)
 
     logger.info("preproc yeilds %s", template_string)
 
-    return template_string
+    return template_string, preprocs
 
 def render_draft(latex_jinja_env, template_string, data, write_header=True):
     re_var = re.compile(r"\\VAR{(.*?)==(.*?)}")
@@ -194,7 +222,7 @@ def render_draft(latex_jinja_env, template_string, data, write_header=True):
     for k, v in draft_vars:
         logger.info("draft var: %s %s",k,v)
     
-    template_string = preproc_template(template_string)
+    template_string, preprocs = preproc_template(template_string)
 
     ready_template = re_var.sub(r"\\VAR{\1}", template_string)
     
