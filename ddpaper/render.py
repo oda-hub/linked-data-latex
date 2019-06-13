@@ -18,6 +18,18 @@ from jinja2 import nodes
 from jinja2.ext import Extension
 from jinja2.exceptions import TemplateRuntimeError
 
+import importlib
+
+class AttrDict(dict):
+    def __init__(self, *args, **kwargs):
+        super(AttrDict, self).__init__(*args, **kwargs)
+
+    def __getattr__(self, k):
+        try:
+            return self[k]
+        except KeyError:
+            raise KeyError('key {} is not available, have keys: {}'.format(k, ", ".join(self.keys())))
+
 class RaiseExtension(Extension):
     # This is our keyword(s):
     tags = set(['raise'])
@@ -87,9 +99,21 @@ def extract_template_data(template_string):
 
     return template_data
 
+def load_modules_in_env(latex_jinja_env, key):
+    if key.strip().startswith('local.'):
+        local_marker, module_name, remainder = key.split(".",2)
+
+        module = importlib.import_module(module_name)
+
+        logger.info('imported %s as %s',module_name,module)
+
+        latex_jinja_env.globals['local'] = AttrDict(**{module_name: module})
+
 
 def compute_value(latex_jinja_env, key, data):
-    rtemplate = latex_jinja_env.from_string("\VAR{"+key+"}")
+    load_modules_in_env(latex_jinja_env, key)
+
+    rtemplate = latex_jinja_env.from_string("\VAR{"+module_name+"."+remainder+"}")
 
     try:
         d_value=np.unicode(rtemplate.render(data)) #.encode('utf8')
@@ -132,6 +156,10 @@ def render_definitions(latex_jinja_env,template_string,data):
 
     output=header
     for l_key, key, value in template_data:
+        if l_key.strip().startswith("oda."):
+            logger.debug("loading", l_key)
+            
+
         d_value = compute_value(latex_jinja_env, key, data)
 
         logger.debug("key: %s, value: %s; long key: %s; data value %s"%(key, value, l_key, d_value))
@@ -146,9 +174,16 @@ def render_draft(latex_jinja_env, template_string, data, write_header=True):
 
     draft_vars = re_var.findall(template_string)
     for k, v in draft_vars:
-        logger.debug("draft var: %s %s",k,v)
+        logger.info("draft var: %s %s",k,v)
 
     ready_template = re_var.sub(r"\\VAR{\1}", template_string)
+    
+    re_all_var = re.compile(r"\\VAR{(.*?)}")
+    draft_vars = re_all_var.findall(template_string)
+
+    for k in draft_vars:
+        load_modules_in_env(latex_jinja_env, k)
+        logger.info("processed draft var: %s",k)
 
     logger.debug("processed template:\n %s",ready_template)
 
