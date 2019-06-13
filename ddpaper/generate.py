@@ -14,7 +14,6 @@ import coloredlogs
 
 logger = logging.getLogger('ddpaper.generate')
 
-coloredlogs.install(level='DEBUG',fmt='%(asctime)s %(hostname)s %(name)20s[%(process)d] %(levelname)10s %(message)s')
 
 try:
     from dataanalysis import core
@@ -46,9 +45,11 @@ def main():
     
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
+        coloredlogs.install(level='DEBUG',fmt='%(asctime)s %(hostname)s %(name)20s[%(process)d] %(levelname)10s %(message)s')
         logger.debug('debug logging enabled')
     else:
         logging.basicConfig(level=logging.INFO)
+        coloredlogs.install(level='INFO',fmt='%(asctime)s %(hostname)s %(name)20s[%(process)d] %(levelname)10s %(message)s')
         logger.debug('info logging enabled')
 
 
