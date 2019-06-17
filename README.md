@@ -6,7 +6,8 @@
 
 # Templating for scientific papers
 
-This helper framework aims to help establishing transparent data-to-paper flow, and features:
+This helper allows to embed symbolic references to the data into the scientific paper. 
+The framework aims to help establishing transparent data-to-paper flow, and features:
 
 * based on [Jinja2](http://jinja.pocoo.org/docs/2.10/)
 * integraion with [Latex](https://www.latex-project.org/about/) 
@@ -15,3 +16,4 @@ This helper framework aims to help establishing transparent data-to-paper flow, 
 * reading data from yaml
 * reading data from workflow data
 * integration with a Jupyter notebooks
+* extensible with python modules
