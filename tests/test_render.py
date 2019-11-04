@@ -67,11 +67,11 @@ def test_render_call():
         s = requests.get('https://gcn-circular-gateway.herokuapp.com/gcn-bib/bynumber/%i'%num).text
         return re.search('@ARTICLE\{(.*?),', s).groups()[0]
 
-    latex_jinja_env.globals['oda']=dict(gcn=dict(cite=gcn_cite))
+    latex_jinja_env.globals['lib']=dict(gcn=dict(cite=gcn_cite))
 
     rendering=render.render_draft(
                         latex_jinja_env,
-                        r"\VAR{oda.gcn.cite(100)}",
+                        r"\VAR{lib.gcn.cite(100)}",
                         {'test_var':1.4123e-4},
                         write_header=False,
                     )
@@ -121,7 +121,8 @@ def test_render_loaded_preproc():
 
     assert rendering.strip() == "Hurley1998_gcn100"
 
-def test_render_loaded_assume():
+
+def test_render_oda():
     import ddpaper.render as render
     import ddpaper.filters as filters
 
@@ -131,13 +132,12 @@ def test_render_loaded_assume():
     rendering=render.render_draft(
                         latex_jinja_env,
                         r"""
-                            \PREPROC{\\citepgcn{(.*?)}{\\VAR{local.gcn.cite(\1)}}
-                            \citepgcn{100}
+                            \VAR{oda.evaluate("integral-observation-summary", "status", when_utc="2012-11-11T11:11:11").data.curent_rev | int}
                         """,
-                        {'test_var':1.4123e-4},
+                        {},
                         write_header=False,
                     )
 
     print("rendering",rendering)
 
-    assert rendering.strip() == "Hurley1998_gcn100"
+    assert rendering.strip() == "1231"

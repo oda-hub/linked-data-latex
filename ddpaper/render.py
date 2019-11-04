@@ -112,6 +112,15 @@ def load_modules_in_env(latex_jinja_env, key):
 
         return key #module_name+"."+remainder
 
+    if key.strip().startswith('oda.'):
+        logger.info("loading oda plugin")
+
+        module = importlib.import_module("odahub")
+
+        logger.info('imported odahub as %s', module)
+
+        latex_jinja_env.globals['oda'] = AttrDict(**{'evaluate': module.evaluate})
+
     return key
 
 
@@ -156,6 +165,9 @@ def render_definitions(latex_jinja_env,template_string,data):
   \\fi
 }
 
+\def\PREPROC#1{%
+}
+
 % extracted definitions
 
 """
@@ -164,16 +176,12 @@ def render_definitions(latex_jinja_env,template_string,data):
 
     preprocs_dict = dict(preprocs)
 
-    print("preprocs dict", preprocs_dict)
+    logger.info("preprocs dict", preprocs_dict)
 
     template_data = extract_template_data(template_string)
 
     output=header
     for l_key, key, value in template_data:
-        if l_key.strip().startswith("oda."):
-            logger.debug("loading", l_key)
-            
-
         d_value = compute_value(latex_jinja_env, key, data)
 
         logger.debug("key: %s, value: %s; long key: %s; data value %s"%(key, value, l_key, d_value))
