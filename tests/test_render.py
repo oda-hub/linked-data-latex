@@ -110,7 +110,7 @@ def test_render_loaded_preproc():
     rendering=render.render_draft(
                         latex_jinja_env,
                         r"""
-                            \PREPROC{preproc.yaml}
+                            \ASSUME{preproc.yaml}
                             \citepgcn{100}
                         """,
                         {'test_var':1.4123e-4},
@@ -133,6 +133,29 @@ def test_render_oda():
                         latex_jinja_env,
                         r"""
                             \VAR{oda.evaluate("integral-observation-summary", "status", when_utc="2012-11-11T11:11:11").data.curent_rev | int}
+                        """,
+                        {},
+                        write_header=False,
+                    )
+
+    print("rendering",rendering)
+
+    assert rendering.strip() == "1231"
+
+def test_render_oda():
+    import ddpaper.render as render
+    import ddpaper.filters as filters
+
+    latex_jinja_env = render.get_latex_jinja_env()
+    filters.setup_custom_filters(latex_jinja_env)
+    
+    yaml.dump({'status': 'oda.evaluate("integral-observation-summary", "status", when_utc="2012-11-11T11:11:11")'}, open('load-status.yaml', 'w'))
+
+    rendering=render.render_draft(
+                        latex_jinja_env,
+                        r"""
+                            \LOAD{load-status.yaml}
+                            \VAR{status.data.curent_rev | int}
                         """,
                         {},
                         write_header=False,

@@ -124,7 +124,7 @@ def load_modules_in_env(latex_jinja_env, key):
     return key
 
 
-def compute_value(latex_jinja_env, key, data):
+def compute_value(latex_jinja_env, key, data, allow_incomplete=True):
     newkey = load_modules_in_env(latex_jinja_env, key)
 
     logger.info('compute value for key %s', newkey)
@@ -137,6 +137,7 @@ def compute_value(latex_jinja_env, key, data):
         print("unable to render",key,e)
 
         d_value="XXX"
+        if not allow_incomplete: raise
 
     return d_value
 
@@ -165,7 +166,10 @@ def render_definitions(latex_jinja_env,template_string,data):
   \\fi
 }
 
-\def\PREPROC#1{%
+\def\ASSUME#1{%
+}
+
+\def\LOAD#1{%
 }
 
 % extracted definitions
@@ -198,10 +202,33 @@ def render_definitions(latex_jinja_env,template_string,data):
 
     return output
 
+def extract_loads_template(latex_jinja_env, template_string):
+    logger.info("extrarting load statements in %s", template_string)
+
+    re_load_sources = re.compile(r"\\LOAD{(.*?)}", re.M)
+
+    data={}
+    
+    for source_fn in re_load_sources.findall(template_string):
+        logger.info("loading from %s", source_fn)
+        for k,v in yaml.load(open(source_fn)).items():
+
+            # load as template
+            #data[k] = compute_value(latex_jinja_env, v, {}, False)
+
+            import odahub as oda
+            data[k] = eval(v)
+
+            logger.info("loading %s from %s as %s", k, v, data[k])
+
+    template_string = re_load_sources.sub("", template_string)
+
+    return template_string, data
+
 def preproc_template(template_string):
     logger.info("preprocessing template %s", template_string)
 
-    re_preproc_sources = re.compile(r"\\PREPROC{(.*?)}", re.M)
+    re_preproc_sources = re.compile(r"\\ASSUME{(.*?)}", re.M)
 
     preprocs = []
 
@@ -233,6 +260,10 @@ def render_draft(latex_jinja_env, template_string, data, write_header=True):
         logger.info("draft var: %s %s",k,v)
     
     template_string, preprocs = preproc_template(template_string)
+
+    template_string, loaded_data = extract_loads_template(latex_jinja_env, template_string)
+
+    data = {**data, **loaded_data}
 
     ready_template = re_var.sub(r"\\VAR{\1}", template_string)
     
