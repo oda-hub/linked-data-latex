@@ -4,6 +4,7 @@ from __future__ import print_function
 import os
 import re
 import jinja2
+import yaml
 import numpy as np
 from jinja2.utils import concat
 
@@ -192,24 +193,25 @@ def render_definitions(latex_jinja_env,template_string,data):
 def preproc_template(template_string):
     logger.info("preprocessing template %s", template_string)
 
-    re_preproc = re.compile(r"^.*?PREPROC (.*?) TO (.*?)\n", re.M)
+    re_preproc_sources = re.compile(r"\\PREPROC{(.*?)}", re.M)
 
     preprocs = []
 
-    for re_in, re_out in re_preproc.findall(template_string):
-        logger.info('applying preproc %s => %s', re_in, re_out)
+    for preproc_source_fn in re_preproc_sources.findall(template_string):
+        for re_in, re_out in yaml.load(open(preproc_source_fn)).items():
+            logger.info('applying preproc %s => %s', re_in, re_out)
 
-        for g in re.findall("("+re_in+")", template_string):
-            f_re_in = g[0]
-            logger.info("found preproc target %s", f_re_in)
+            for g in re.findall("("+re_in+")", template_string):
+                f_re_in = g[0]
+                logger.info("found preproc target %s", f_re_in)
 
-            f_re_out = re.sub(re_in, re_out, f_re_in)
+                f_re_out = re.sub(re_in, re_out, f_re_in)
 
-            preprocs.append((f_re_in, f_re_out))
+                preprocs.append((f_re_in, f_re_out))
 
-        template_string = re.sub(re_in, re_out, template_string)
+            template_string = re.sub(re_in, re_out, template_string)
 
-    template_string = re_preproc.sub("", template_string)
+    template_string = re_preproc_sources.sub("", template_string)
 
     logger.info("preproc yeilds %s", template_string)
 

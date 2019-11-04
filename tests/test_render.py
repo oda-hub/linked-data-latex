@@ -1,6 +1,7 @@
 import jinja2
 import re
 import requests
+import yaml
 
 def test_render():
     import ddpaper.render as render
@@ -104,13 +105,39 @@ def test_render_loaded_preproc():
     latex_jinja_env = render.get_latex_jinja_env()
     filters.setup_custom_filters(latex_jinja_env)
 
+    yaml.dump({r'\\citepgcn{(.*?)}': r'\VAR{local.gcn.cite(\1)}'}, open('preproc.yaml', 'w'))
+
     rendering=render.render_draft(
                         latex_jinja_env,
-                        r"% PREPROC \\citepgcn{(.*?)} TO \\VAR{local.gcn.cite(\1)}"+"\n"+r"\citepgcn{100}",
+                        r"""
+                            \PREPROC{preproc.yaml}
+                            \citepgcn{100}
+                        """,
                         {'test_var':1.4123e-4},
                         write_header=False,
                     )
 
     print("rendering",rendering)
 
-    assert rendering == "Hurley1998_gcn100"
+    assert rendering.strip() == "Hurley1998_gcn100"
+
+def test_render_loaded_assume():
+    import ddpaper.render as render
+    import ddpaper.filters as filters
+
+    latex_jinja_env = render.get_latex_jinja_env()
+    filters.setup_custom_filters(latex_jinja_env)
+
+    rendering=render.render_draft(
+                        latex_jinja_env,
+                        r"""
+                            \PREPROC{\\citepgcn{(.*?)}{\\VAR{local.gcn.cite(\1)}}
+                            \citepgcn{100}
+                        """,
+                        {'test_var':1.4123e-4},
+                        write_header=False,
+                    )
+
+    print("rendering",rendering)
+
+    assert rendering.strip() == "Hurley1998_gcn100"
