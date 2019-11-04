@@ -115,7 +115,7 @@ def load_modules_in_env(latex_jinja_env, key):
     if key.strip().startswith('oda.'):
         logger.info("loading oda plugin")
 
-        module = importlib.import_module("odahub")
+        module = importlib.import_module("oda")
 
         logger.info('imported odahub as %s', module)
 
@@ -137,7 +137,8 @@ def compute_value(latex_jinja_env, key, data, allow_incomplete=True):
         print("unable to render",key,e)
 
         d_value="XXX"
-        if not allow_incomplete: raise
+        #if not allow_incomplete:
+        #    raise
 
     return d_value
 
@@ -193,6 +194,7 @@ def render_definitions(latex_jinja_env,template_string,data):
         nref = 0
         for k,v in preprocs_dict.items():
             if l_key == v:
+                logger.debug('found reference %s to %s', k, v)
                 output+=r"\addVAR{"+k+"}{"+d_value+"}\n"
                 nref += 1
 
@@ -216,7 +218,7 @@ def extract_loads_template(latex_jinja_env, template_string):
             # load as template
             #data[k] = compute_value(latex_jinja_env, v, {}, False)
 
-            import odahub as oda
+            import oda
             data[k] = eval(v)
 
             logger.info("loading %s from %s as %s", k, v, data[k])
