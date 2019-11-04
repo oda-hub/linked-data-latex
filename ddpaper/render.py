@@ -178,6 +178,9 @@ def render_definitions(latex_jinja_env,template_string,data):
 """
 
     template_string, preprocs = preproc_template(template_string)
+    template_string, loaded_data = extract_loads_template(latex_jinja_env, template_string)
+
+    data = {**data, **loaded_data}
 
     preprocs_dict = dict(preprocs)
 

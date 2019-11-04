@@ -17,3 +17,4 @@ The framework aims to help establishing transparent data-to-paper flow, and feat
 * reading data from workflow data
 * integration with a Jupyter notebooks
 * extensible with python modules
+* comprehensive citing: cite by tag, statement
