@@ -17,4 +17,18 @@ The framework aims to help establishing transparent data-to-paper flow, and feat
 * reading data from workflow data
 * integration with a Jupyter notebooks
 * extensible with python modules
-* comprehensive citing: cite by tag, statement
+
+# Cite-by-meaning model
+
+* comprehensive citing: cite by tag, title, author, statement
+* cite by fact (expressed as rdf)
+* integration with zotero
+
+Encourages explaining the reason behind citing.
+Typical literature work flow:
+
+* interesting paper noticed (or possibly any paper) and integrated in zotero
+* writing the draft in latex, a context (fact, review, etc) requires a citation
+* citation by tag is inserted, but produces many references, some irrelevant
+* the citation request as well as literature annotation base is refined until the citation is as desired
+* final citation contains not only the tranditional bibliographic reference, but also the reason why it was included, captured in the citation command and the annotated literature base
