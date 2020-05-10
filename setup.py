@@ -5,8 +5,8 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(
-    name = "rich-draft-templating",
-    version = "0.1.1",
+    name = "linked-data-latex",
+    version = "0.1.2",
     author = "Volodymyr Savchenko",
     author_email = "contact@volodymyrsavchenko.com",
     description = (""),
