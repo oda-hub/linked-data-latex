@@ -1,7 +1,7 @@
 setuptools
 Jinja2
 Django
-numpy
+numpy==1.18
 astropy
 pydot
 ruamel.yaml
