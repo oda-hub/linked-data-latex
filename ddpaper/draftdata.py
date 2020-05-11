@@ -1,6 +1,6 @@
 # from collections import defaultdict
 
-import ruamel.yaml as yaml
+import yaml
 import os
 import astropy.units as u
 

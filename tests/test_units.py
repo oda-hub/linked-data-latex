@@ -44,7 +44,7 @@ def test_units_unpickle():
     from ddpaper.data import setup_yaml
 
     from astropy import units as u
-    import ruamel.yaml as yaml
+    import yaml
 
     try:
         from StringIO import StringIO

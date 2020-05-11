@@ -1,5 +1,5 @@
 import glob
-import ruamel.yaml as yaml
+import yaml
 import sys
 import re
 import os

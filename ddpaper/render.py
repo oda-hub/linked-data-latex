@@ -221,7 +221,7 @@ def extract_loads_template(latex_jinja_env, template_string):
             # load as template
             #data[k] = compute_value(latex_jinja_env, v, {}, False)
 
-            import oda
+            import oda 
             data[k] = eval(v)
 
             logger.info("loading %s from %s as %s", k, v, data[k])
