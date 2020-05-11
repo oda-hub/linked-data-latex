@@ -1,3 +1,6 @@
+import pydot
+import astropy.constants as const
+import astropy.units as u
 import glob
 import ruamel.yaml as yaml
 import sys
@@ -12,33 +15,28 @@ try:
     from dataanalysis import core, importing
     from dataanalysis.displaygraph import dotify_hashe
 
-    core.global_readonly_caches=True
+    core.global_readonly_caches = True
 except ImportError:
     logger.warning("no DDA")
 
-import astropy.units as u
-import astropy.constants as const
 
-import pydot
-
-
-
-def load_data_directory(rootdir="./data",data=None):
+def load_data_directory(rootdir="./data", data=None):
     if data is None:
-        data={}
-        
-    logger.info("loading data from rootdir %s",rootdir)
+        data = {}
+
+    logger.info("loading data from rootdir %s", rootdir)
 
     for suffix in ".yaml", ".yml":
         for fn in glob.glob(rootdir+"/*"+suffix):
-            key=os.path.normpath(fn).replace(rootdir+"/","").replace(suffix,"")
-            logger.info("loading data from %s as %s",fn,key)
-            data[key]=yaml.load(open(fn))
+            key = os.path.normpath(fn).replace(
+                rootdir+"/", "").replace(suffix, "")
+            logger.info("loading data from %s as %s", fn, key)
+            data[key] = yaml.load(open(fn))
     return data
 
 
 def load_data_ddobject(modules, assume, ddobjects, data=None):
-#    app.jinja_env.globals.update(clever_function=clever_function)
+    #    app.jinja_env.globals.update(clever_function=clever_function)
 
     for m, in modules:
         logger.info("importing %s", m)
@@ -55,42 +53,44 @@ def load_data_ddobject(modules, assume, ddobjects, data=None):
     if data is None:
         data = {}
 
-    graph=pydot.Dot(graph_type='digraph', splines='ortho' )
-    doc_root="Paper"
-    graph.add_node(pydot.Node(doc_root, style="filled", fillcolor="green", shape="box"))
+    graph = pydot.Dot(graph_type='digraph', splines='ortho')
+    doc_root = "Paper"
+    graph.add_node(pydot.Node(doc_root, style="filled",
+                              fillcolor="green", shape="box"))
 
     for ddobject, in ddobjects:
-        obj=core.AnalysisFactory.byname(ddobject)
+        obj = core.AnalysisFactory.byname(ddobject)
         obj.datafile_restore_mode = 'url_in_object'
-        obj=obj.get()
-        data[ddobject]=obj.export_data(include_class_attributes=True)
-        logger.info("loading %s with %s",ddobject,data[ddobject].keys())
+        obj = obj.get()
+        data[ddobject] = obj.export_data(include_class_attributes=True)
+        logger.info("loading %s with %s", ddobject, data[ddobject].keys())
 
-        graph,root_node=dotify_hashe(obj._da_locally_complete,graph=graph,return_root=True)
+        graph, root_node = dotify_hashe(
+            obj._da_locally_complete, graph=graph, return_root=True)
         graph.add_edge(pydot.Edge(root_node, doc_root))
 
     graph.write_png("paper_hashe.png")
 
     return data
 
+
 class DynUnitDict(object):
 
-    def __init__(self,data):
-        self.raw_data=data
+    def __init__(self, data):
+        self.raw_data = data
 
-    def interpret_unit(self,item):
+    def interpret_unit(self, item):
         try:
-            requested_unit=u.Unit(item)
+            requested_unit = u.Unit(item)
         except ValueError:
             raise
 
-        for key,value  in self.raw_data.items():
+        for key, value in self.raw_data.items():
             try:
                 available_unit = u.Unit(key)
                 return value * available_unit.to(requested_unit)
             except ValueError:
                 continue
-
 
     def __getitem__(self, item):
         if item in self.raw_data:
@@ -119,7 +119,6 @@ def setup_yaml():
     yaml.add_representer(const.Constant, quantity_representer)
     yaml.add_representer(u.Unit, unit_representer)
     yaml.add_constructor('!Quantity', quantity_constructor)
-
 
 
 def data_assertion(data):
