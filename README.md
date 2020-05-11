@@ -1,7 +1,7 @@
-[![Build Status](https://travis-ci.org/volodymyrss/rich-draft-templating.png?branch=master)](https://travis-ci.org/volodymyrss/rich-draft-templating)
-[![codebeat badge](https://codebeat.co/badges/dc6f6224-26f1-45dc-b47f-31baefc92190)](https://codebeat.co/projects/github-com-volodymyrss-rich-draft-templating-master)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/6f8743e35a02487981dd0b98660b8000)](https://app.codacy.com/app/vladimir.savchenko/rich-draft-templating?utm_source=github.com&utm_medium=referral&utm_content=volodymyrss/rich-draft-templating&utm_campaign=Badge_Grade_Dashboard)
-[![Requirements Status](https://requires.io/github/volodymyrss/rich-draft-templating/requirements.svg?branch=master)](https://requires.io/github/volodymyrss/rich-draft-templating/requirements/?branch=master)
+[![Build Status](https://travis-ci.org/volodymyrss/rich-draft-templating.png?branch=master)](https://travis-ci.org/volodymyrss/linked-data-latex)
+[![codebeat badge](https://codebeat.co/badges/dc6f6224-26f1-45dc-b47f-31baefc92190)](https://codebeat.co/projects/github-com-volodymyrss-linked-data-latex-master)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/6f8743e35a02487981dd0b98660b8000)](https://app.codacy.com/app/vladimir.savchenko/linked-data-latex?utm_source=github.com&utm_medium=referral&utm_content=volodymyrss/linked-data-latex&utm_campaign=Badge_Grade_Dashboard)
+[![Requirements Status](https://requires.io/github/volodymyrss/linked-data-latex/requirements.svg?branch=master)](https://requires.io/github/volodymyrss/linked-data-latex/requirements/?branch=master)
 
 
 # Templating for scientific papers
