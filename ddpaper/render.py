@@ -9,7 +9,7 @@ from ddpaper.filters import setup_custom_filters
 import os
 import re
 import jinja2
-import yaml
+import ruamel.yaml as yaml
 import numpy as np
 from jinja2.utils import concat
 

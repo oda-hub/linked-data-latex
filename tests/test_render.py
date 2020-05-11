@@ -1,7 +1,7 @@
 import jinja2
 import re
 import requests
-import yaml
+import ruamel.yaml as yaml
 import pytest
 
 def test_render():

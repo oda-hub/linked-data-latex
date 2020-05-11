@@ -7,3 +7,5 @@ pydot
 ruamel.yaml
 pydot
 oda-client
+IPython
+requests
