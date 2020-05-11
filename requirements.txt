@@ -4,5 +4,5 @@ Django
 numpy
 astropy
 pydot
-yaml
+pyyaml
 pydot
