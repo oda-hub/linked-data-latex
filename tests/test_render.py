@@ -2,6 +2,7 @@ import jinja2
 import re
 import requests
 import yaml
+import pytest
 
 def test_render():
     import ddpaper.render as render
@@ -123,6 +124,7 @@ def test_render_loaded_preproc():
 
 
 
+@pytest.mark.skip("only with odahub internals")
 def test_render_oda():
     import ddpaper.render as render
     import ddpaper.filters as filters

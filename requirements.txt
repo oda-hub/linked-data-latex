@@ -6,3 +6,4 @@ astropy
 pydot
 pyyaml
 pydot
+oda-client
