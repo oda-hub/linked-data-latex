@@ -49,7 +49,7 @@ def dump_notebook_globals(target, globs):
                 logger.info(n, v)
 
                 try:
-                    s = StringIO.StringIO()
+                    s = StringIO()
                     yaml.dump(v, s)
                     t_data[n] = v
                 except:
