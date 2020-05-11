@@ -4,6 +4,6 @@ Django
 numpy
 astropy
 pydot
-pyyaml
+ruamel.yaml
 pydot
 oda-client
