@@ -30,7 +30,7 @@ class DraftData(object):
 
 
 def dump_notebook_globals(target,globs):
-    import StringIO
+    from io import StringIO
     from IPython import get_ipython
     ipython = get_ipython()
     s = ipython.magic("who_ls")
@@ -39,7 +39,7 @@ def dump_notebook_globals(target,globs):
     setup_yaml()
 
     with DraftData(target) as t_data:
-        logger.info("storing in",target)
+        logger.info("storing in %s",target)
 
         for n in s:
             v = globs[n]

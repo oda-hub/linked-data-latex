@@ -184,7 +184,7 @@ def render_definitions(latex_jinja_env,template_string,data):
 
     preprocs_dict = dict(preprocs)
 
-    logger.info("preprocs dict", preprocs_dict)
+    logger.info("preprocs dict %s", preprocs_dict)
 
     template_data = extract_template_data(template_string)
 

@@ -89,7 +89,7 @@ def main():
                            template_string,
                            data)
     else:
-        logger.error('unknown mode:',mode)
+        logger.error('unknown mode: %s',mode)
         return
 
     if args.output == "-":
