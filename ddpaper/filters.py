@@ -27,10 +27,10 @@ def format_plusminus(value, ct=2, cte=1):
                 value[v] = value[v]/10**value['scale_log10']
 
     if 'stat_err' in value:
-        r = ("%%.%ilf~$\pm$~%%.%ilg" % (ct, cte)) % (
+        r = ("%%.%ilf~$\pm$~%%.%ilf" % (ct, cte)) % (
             value['mean'], value['stat_err'])
     else:
-        r = ("%%.%ilf\\small$^{+%%.%ilg}_{-%%.%ilg}$\\normalsize" % (ct, cte, cte)) % (
+        r = ("%%.%ilf\\small$^{+%%.%ilf}_{-%%.%ilf}$\\normalsize" % (ct, cte, cte)) % (
             value['mean'], value['stat_err_plus'], value['stat_err_minus'])
 
     if 'scale_log10' in value:
