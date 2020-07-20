@@ -3,6 +3,7 @@ import astropy.constants as const
 import astropy.units as u
 import glob
 import ruamel.yaml as yaml
+import json
 import sys
 import re
 import os
@@ -26,12 +27,17 @@ def load_data_directory(rootdir="./data", data=None):
 
     logger.info("loading data from rootdir %s", rootdir)
 
-    for suffix in ".yaml", ".yml":
+    for suffix in ".yaml", ".yml", ".json":
         for fn in glob.glob(rootdir+"/*"+suffix):
             key = os.path.normpath(fn).replace(
-                rootdir+"/", "").replace(suffix, "")
+                rootdir, "").strip("/").replace(suffix, "")
             logger.info("loading data from %s as %s", fn, key)
-            data[key] = yaml.load(open(fn))
+
+            if 'json' in suffix:
+                data[key] = json.load(open(fn))
+            else:
+                data[key] = yaml.load(open(fn))
+
     return data
 
 
