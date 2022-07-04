@@ -1,0 +1,7 @@
+*.swp
+.tox
+build
+__pycache__
+*.egg-info
+load-status.yaml
+preproc.yaml

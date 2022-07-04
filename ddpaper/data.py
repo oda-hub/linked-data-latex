@@ -33,7 +33,7 @@ def load_data_directory(rootdir="./data",data=None):
         for fn in glob.glob(rootdir+"/*"+suffix):
             key=os.path.normpath(fn).replace(rootdir+"/","").replace(suffix,"")
             logger.info("loading data from %s as %s",fn,key)
-            data[key]=yaml.load(open(fn))
+            data[key]=yaml.load(open(fn), Loader=yaml.Loader)
     return data
 
 

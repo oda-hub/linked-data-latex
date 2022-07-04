@@ -216,7 +216,7 @@ def extract_loads_template(latex_jinja_env, template_string):
     
     for source_fn in re_load_sources.findall(template_string):
         logger.info("loading from %s", source_fn)
-        for k,v in yaml.load(open(source_fn)).items():
+        for k,v in yaml.load(open(source_fn), Loader=yaml.Loader).items():
 
             # load as template
             #data[k] = compute_value(latex_jinja_env, v, {}, False)
@@ -238,7 +238,7 @@ def preproc_template(template_string):
     preprocs = []
 
     for preproc_source_fn in re_preproc_sources.findall(template_string):
-        for re_in, re_out in yaml.load(open(preproc_source_fn)).items():
+        for re_in, re_out in yaml.load(open(preproc_source_fn), Loader=yaml.Loader).items():
             logger.info('applying preproc %s => %s', re_in, re_out)
 
             for g in re.findall("("+re_in+")", template_string):

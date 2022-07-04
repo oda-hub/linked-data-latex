@@ -1,5 +1,6 @@
 import jinja2
 import re
+import pytest
 import requests
 import yaml
 
@@ -105,7 +106,7 @@ def test_render_loaded_preproc():
     latex_jinja_env = render.get_latex_jinja_env()
     filters.setup_custom_filters(latex_jinja_env)
 
-    yaml.dump({r'\\citepgcn{(.*?)}': r'\VAR{local.gcn.cite(\1)}'}, open('preproc.yaml', 'w'))
+    yaml.dump({r'\\citepgcn{(.*?)}': r'\\VAR{local.gcn.cite(\1)}'}, open('preproc.yaml', 'w'))
 
     rendering=render.render_draft(
                         latex_jinja_env,
@@ -123,6 +124,7 @@ def test_render_loaded_preproc():
 
 
 
+@pytest.mark.skip("ignoring odahub compute")
 def test_render_oda():
     import ddpaper.render as render
     import ddpaper.filters as filters

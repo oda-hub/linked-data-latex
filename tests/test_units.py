@@ -57,7 +57,7 @@ def test_units_unpickle():
     r=dict(var=1*u.keV)
     yaml.dump(r,s)
     s.seek(0)
-    rr=yaml.load(s)
+    rr=yaml.load(s, Loader=yaml.Loader)
 
     print(r)
     print(rr)

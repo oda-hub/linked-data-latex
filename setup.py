@@ -13,6 +13,9 @@ setup(
     license = "BSD",
     packages=['ddpaper'],
     long_description=read('README.md'),
+    requires=[
+        "yaml"
+    ],
     entry_points = {
         'console_scripts': [
             'ddpaper=ddpaper.generate:main'
