@@ -2,7 +2,8 @@ import jinja2
 import re
 import pytest
 import requests
-import yaml
+import ruamel.yaml as yaml
+import pytest
 
 def test_render():
     import ddpaper.render as render

@@ -1,8 +1,11 @@
 setuptools
 Jinja2
 Django
-numpy
+numpy==1.22.0
 astropy
 pydot
-pyyaml
+ruamel.yaml
 pydot
+oda-client
+IPython
+requests

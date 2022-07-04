@@ -26,11 +26,12 @@ class DraftData(object):
 
     def __exit__(self, _type, value, traceback):
         if self.data is not None:
-            yaml.dump(self.data, open(draft_dir + "/" + self.section + ".yaml", "w"))
+            yaml.dump(self.data, open(
+                draft_dir + "/" + self.section + ".yaml", "w"))
 
 
-def dump_notebook_globals(target,globs):
-    import StringIO
+def dump_notebook_globals(target, globs):
+    from io import StringIO
     from IPython import get_ipython
     ipython = get_ipython()
     s = ipython.magic("who_ls")
@@ -39,17 +40,16 @@ def dump_notebook_globals(target,globs):
     setup_yaml()
 
     with DraftData(target) as t_data:
-        logger.info("storing in",target)
+        logger.info("storing in %s", target)
 
         for n in s:
             v = globs[n]
             if isinstance(v, u.Quantity):
                 logger.info(n, v)
 
-
                 try:
-                    s=StringIO.StringIO()
-                    yaml.dump(v,s)
+                    s = StringIO()
+                    yaml.dump(v, s)
                     t_data[n] = v
                 except:
                     continue
@@ -63,4 +63,3 @@ def dump_notebook_globals(target,globs):
             if isinstance(v, float):
                 logger.info(n, v)
                 t_data[n] = v
-

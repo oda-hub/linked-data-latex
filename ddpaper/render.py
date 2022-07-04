@@ -1,10 +1,15 @@
 from __future__ import print_function
+import importlib
+from jinja2.exceptions import TemplateRuntimeError
+from jinja2.ext import Extension
+from jinja2 import nodes
+from ddpaper.filters import setup_custom_filters
 
 
 import os
 import re
 import jinja2
-import yaml
+import ruamel.yaml as yaml
 import numpy as np
 from jinja2.utils import concat
 
@@ -12,14 +17,9 @@ import logging
 
 logger = logging.getLogger('ddpaper.render')
 
-from ddpaper.filters import setup_custom_filters
 
 # FROM: https://github.com/duelafn/python-jinja2-apci/blob/master/jinja2_apci/error.py
-from jinja2 import nodes
-from jinja2.ext import Extension
-from jinja2.exceptions import TemplateRuntimeError
 
-import importlib
 
 class AttrDict(dict):
     def __init__(self, *args, **kwargs):
@@ -29,7 +29,9 @@ class AttrDict(dict):
         try:
             return self[k]
         except KeyError:
-            raise KeyError('key {} is not available, have keys: {}'.format(k, ", ".join(self.keys())))
+            raise KeyError('key {} is not available, have keys: {}'.format(
+                k, ", ".join(self.keys())))
+
 
 class RaiseExtension(Extension):
     # This is our keyword(s):
@@ -54,32 +56,35 @@ class RaiseExtension(Extension):
     def _raise(self, msg, caller):
         raise TemplateRuntimeError(msg)
 
+
 def get_latex_jinja_env():
-    env=jinja2.Environment(
-            block_start_string = r'\BLOCK{',
-            block_end_string = '}',
-            variable_start_string = r'\VAR{',
-            variable_end_string = '}',
-            comment_start_string = r'\#{',
-            comment_end_string = '}',
-            line_statement_prefix = r'%%\LINE',
-            line_comment_prefix = '%#',
-            trim_blocks = True,
-            autoescape = False,
-            loader = jinja2.FileSystemLoader(os.path.abspath('.')),
+    env = jinja2.Environment(
+        block_start_string=r'\BLOCK{',
+        block_end_string='}',
+        variable_start_string=r'\VAR{',
+        variable_end_string='}',
+        comment_start_string=r'\#{',
+        comment_end_string='}',
+        line_statement_prefix=r'%%\LINE',
+        line_comment_prefix='%#',
+        trim_blocks=True,
+        autoescape=False,
+        loader=jinja2.FileSystemLoader(os.path.abspath('.')),
         undefined=jinja2.StrictUndefined,
         extensions=[RaiseExtension],
     )
     setup_custom_filters(env)
-    return  env
+    return env
+
 
 def extract_referenced_keys(template_string):
-    reduced=[]
+    reduced = []
     for k in re.findall(r"\\VAR{(.*?)}", template_string):
         if not k in reduced:
-            print("found",k)
+            print("found", k)
             reduced.append(k)
     return reduced
+
 
 def extract_template_data(template_string):
     keys = extract_referenced_keys(template_string)
@@ -91,7 +96,7 @@ def extract_template_data(template_string):
     for key in keys:
         r = re_eq.match(key)
         if r:
-            k,v = r.groups()
+            k, v = r.groups()
         else:
             k = key
             v = None
@@ -100,17 +105,18 @@ def extract_template_data(template_string):
 
     return template_data
 
+
 def load_modules_in_env(latex_jinja_env, key):
     if key.strip().startswith('local.'):
-        local_marker, module_name, remainder = key.split(".",2)
+        local_marker, module_name, remainder = key.split(".", 2)
 
         module = importlib.import_module(module_name)
 
-        logger.info('imported %s as %s',module_name,module)
+        logger.info('imported %s as %s', module_name, module)
 
         latex_jinja_env.globals['local'] = AttrDict(**{module_name: module})
 
-        return key #module_name+"."+remainder
+        return key  # module_name+"."+remainder
 
     if key.strip().startswith('oda.'):
         logger.info("loading oda plugin")
@@ -119,7 +125,8 @@ def load_modules_in_env(latex_jinja_env, key):
 
         logger.info('imported odahub as %s', module)
 
-        latex_jinja_env.globals['oda'] = AttrDict(**{'evaluate': module.evaluate})
+        latex_jinja_env.globals['oda'] = AttrDict(
+            **{'evaluate': module.evaluate})
 
     return key
 
@@ -132,18 +139,18 @@ def compute_value(latex_jinja_env, key, data, allow_incomplete=True):
     rtemplate = latex_jinja_env.from_string("\VAR{"+newkey+"}")
 
     try:
-        d_value=np.unicode(rtemplate.render(data)) #.encode('utf8')
+        d_value = np.unicode(rtemplate.render(data))  # .encode('utf8')
     except Exception as e:
-        print("unable to render",key,e)
+        print("unable to render", key, e)
 
-        d_value="XXX"
-        #if not allow_incomplete:
+        d_value = "XXX"
+        # if not allow_incomplete:
         #    raise
 
     return d_value
 
 
-def render_definitions(latex_jinja_env,template_string,data):
+def render_definitions(latex_jinja_env, template_string, data):
     header = """
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% generated by template.py, please do not edit directly
@@ -178,42 +185,44 @@ def render_definitions(latex_jinja_env,template_string,data):
 """
 
     template_string, preprocs = preproc_template(template_string)
-    template_string, loaded_data = extract_loads_template(latex_jinja_env, template_string)
+    template_string, loaded_data = extract_loads_template(
+        latex_jinja_env, template_string)
 
     data = {**data, **loaded_data}
 
     preprocs_dict = dict(preprocs)
 
-    logger.info("preprocs dict", preprocs_dict)
+    logger.info("preprocs dict %s", preprocs_dict)
 
     template_data = extract_template_data(template_string)
 
-    output=header
+    output = header
     for l_key, key, value in template_data:
         d_value = compute_value(latex_jinja_env, key, data)
 
-        logger.debug("key: %s, value: %s; long key: %s; data value %s"%(key, value, l_key, d_value))
+        logger.debug("key: %s, value: %s; long key: %s; data value %s" %
+                     (key, value, l_key, d_value))
 
         nref = 0
-        for k,v in preprocs_dict.items():
+        for k, v in preprocs_dict.items():
             if l_key == v:
                 logger.debug('found reference %s to %s', k, v)
-                output+=r"\addVAR{"+k+"}{"+d_value+"}\n"
+                output += r"\addVAR{"+k+"}{"+d_value+"}\n"
                 nref += 1
 
         if nref == 0:
-            output+=r"\addVAR{"+l_key+"}{"+d_value+"}\n"
-    
+            output += r"\addVAR{"+l_key+"}{"+d_value+"}\n"
 
     return output
+
 
 def extract_loads_template(latex_jinja_env, template_string):
     logger.info("extrarting load statements in %s", template_string)
 
     re_load_sources = re.compile(r"\\LOAD{(.*?)}", re.M)
 
-    data={}
-    
+    data = {}
+
     for source_fn in re_load_sources.findall(template_string):
         logger.info("loading from %s", source_fn)
         for k,v in yaml.load(open(source_fn), Loader=yaml.Loader).items():
@@ -229,6 +238,7 @@ def extract_loads_template(latex_jinja_env, template_string):
     template_string = re_load_sources.sub("", template_string)
 
     return template_string, data
+
 
 def preproc_template(template_string):
     logger.info("preprocessing template %s", template_string)
@@ -257,29 +267,31 @@ def preproc_template(template_string):
 
     return template_string, preprocs
 
+
 def render_draft(latex_jinja_env, template_string, data, write_header=True):
     re_var = re.compile(r"\\VAR{(.*?)==(.*?)}")
 
     draft_vars = re_var.findall(template_string)
     for k, v in draft_vars:
-        logger.info("draft var: %s %s",k,v)
-    
+        logger.info("draft var: %s %s", k, v)
+
     template_string, preprocs = preproc_template(template_string)
 
-    template_string, loaded_data = extract_loads_template(latex_jinja_env, template_string)
+    template_string, loaded_data = extract_loads_template(
+        latex_jinja_env, template_string)
 
     data = {**data, **loaded_data}
 
     ready_template = re_var.sub(r"\\VAR{\1}", template_string)
-    
+
     re_all_var = re.compile(r"\\VAR{(.*?)}")
     draft_vars = re_all_var.findall(template_string)
 
     for k in draft_vars:
         load_modules_in_env(latex_jinja_env, k)
-        logger.info("processed draft var: %s",k)
+        logger.info("processed draft var: %s", k)
 
-    logger.debug("processed template:\n %s",ready_template)
+    logger.debug("processed template:\n %s", ready_template)
 
     template = latex_jinja_env.from_string(ready_template)
 
@@ -290,41 +302,46 @@ def render_draft(latex_jinja_env, template_string, data, write_header=True):
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 """
     else:
-        header=""
+        header = ""
 
-    raw_render=concat(
-        template.root_render_func(template.new_context(data,shared=False))
+    raw_render = concat(
+        template.root_render_func(template.new_context(data, shared=False))
     )
 
-    rendering=np.unicode(header+raw_render) 
+    rendering = np.unicode(header+raw_render)
 
     return rendering
 
-def render_update(latex_jinja_env,template_string,data):
+
+def render_update(latex_jinja_env, template_string, data):
     template_data = extract_template_data(template_string)
 
     updated_template = template_string
 
     for l_key, key, value in template_data:
         d_value = compute_value(latex_jinja_env, key, data)
-        
-        logger.debug("key: %s, value: %s; long key: %s; data value %s"%(key, value, l_key, d_value))
+
+        logger.debug("key: %s, value: %s; long key: %s; data value %s" %
+                     (key, value, l_key, d_value))
 
         updated_template = updated_template.replace(
-                r"\VAR{%s==%s}"%(key,value),
-                r"\VAR{%s == %s}"%(key.strip(),d_value.strip()),
-            )
+            r"\VAR{%s==%s}" % (key, value),
+            r"\VAR{%s == %s}" % (key.strip(), d_value.strip()),
+        )
 
     return updated_template
 
-def render_validate(latex_jinja_env,template_string,data):
+
+def render_validate(latex_jinja_env, template_string, data):
     template_data = extract_template_data(template_string)
 
     for l_key, key, value in template_data:
         d_value = compute_value(latex_jinja_env, key, data)
-        logger.info("key: %s value: \"%s\", new value: \"%s\""%(key, value, d_value))
+        logger.info("key: %s value: \"%s\", new value: \"%s\"" %
+                    (key, value, d_value))
 
         if value is not None and value != d_value:
-            raise RuntimeError("invalid! key: %s value %s: new value: %s"%(key, value, d_value))
+            raise RuntimeError(
+                "invalid! key: %s value %s: new value: %s" % (key, value, d_value))
 
     return ""
