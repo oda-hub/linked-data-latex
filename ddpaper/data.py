@@ -2,6 +2,7 @@ import pydot
 import astropy.constants as const
 import astropy.units as u
 import glob
+import json
 import yaml
 import sys
 import re
@@ -35,7 +36,7 @@ def load_data_directory(rootdir="./data", data=None):
             if 'json' in suffix:
                 data[key] = json.load(open(fn))
             else:
-                data[key] = yaml.load(open(fn))
+                data[key] = yaml.load(open(fn), Loader=yaml.Loader)
 
     for suffix in ".yaml", ".yml":
         for fn in glob.glob(rootdir+"/*"+suffix):
