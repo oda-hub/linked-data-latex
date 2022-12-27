@@ -66,8 +66,12 @@ def test_render_call():
     filters.setup_custom_filters(latex_jinja_env)
 
     def gcn_cite(num):
-        s = requests.get('https://gcn-circular-gateway.herokuapp.com/gcn-bib/bynumber/%i'%num).text
-        return re.search('@ARTICLE\{(.*?),', s).groups()[0]
+        # s = requests.get('https://gcn-circular-gateway.herokuapp.com/gcn-bib/bynumber/%i'%num).text
+        # return re.search('@ARTICLE\{(.*?),', s).groups()[0]
+        if int(num) == 100:
+            return "Hurley1998_gcn100"
+        else:
+            return num
 
     latex_jinja_env.globals['lib']=dict(gcn=dict(cite=gcn_cite))
 

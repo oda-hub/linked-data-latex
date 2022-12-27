@@ -139,7 +139,7 @@ def compute_value(latex_jinja_env, key, data, allow_incomplete=True):
     rtemplate = latex_jinja_env.from_string("\VAR{"+newkey+"}")
 
     try:
-        d_value = np.unicode(rtemplate.render(data))  # .encode('utf8')
+        d_value = rtemplate.render(data)  # .encode('utf8')
     except Exception as e:
         print("unable to render", key, e)
 
@@ -308,7 +308,7 @@ def render_draft(latex_jinja_env, template_string, data, write_header=True):
         template.root_render_func(template.new_context(data, shared=False))
     )
 
-    rendering = np.unicode(header+raw_render)
+    rendering = header+raw_render
 
     return rendering
 
