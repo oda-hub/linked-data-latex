@@ -1,5 +1,6 @@
 from __future__ import print_function
 import importlib
+import tempfile
 from jinja2.exceptions import TemplateRuntimeError
 from jinja2.ext import Extension
 from jinja2 import nodes
@@ -22,15 +23,22 @@ logger = logging.getLogger('ddpaper.render')
 
 
 class AttrDict(dict):
-    def __init__(self, *args, **kwargs):
-        super(AttrDict, self).__init__(*args, **kwargs)
-
     def __getattr__(self, k):
         try:
             return self[k]
         except KeyError:
             raise KeyError('key {} is not available, have keys: {}'.format(
                 k, ", ".join(self.keys())))
+
+
+class CallDict(dict):
+    def __getattr__(self, k):
+        try:
+            return self[k]
+        except KeyError:
+            raise KeyError('key {} is not available, have keys: {}'.format(
+                k, ", ".join(self.keys())))
+
 
 
 class RaiseExtension(Extension):
@@ -121,12 +129,22 @@ def load_modules_in_env(latex_jinja_env, key):
     if key.strip().startswith('oda.'):
         logger.info("loading oda plugin")
 
-        module = importlib.import_module("oda")
+        import odafunction
 
-        logger.info('imported odahub as %s', module)
+        logger.info('imported odafunction as %s', odafunction)
 
         latex_jinja_env.globals['oda'] = AttrDict(
             **{'evaluate': module.evaluate})
+
+    # if key.strip().startswith('oda.'):
+    #     logger.info("loading oda plugin")
+
+    #     module = importlib.import_module("oda")
+
+    #     logger.info('imported odahub as %s', module)
+
+    #     latex_jinja_env.globals['oda'] = AttrDict(
+    #         **{'evaluate': module.evaluate})
 
     return key
 
@@ -217,7 +235,7 @@ def render_definitions(latex_jinja_env, template_string, data):
 
 
 def extract_loads_template(latex_jinja_env, template_string):
-    logger.info("extrarting load statements in %s", template_string)
+    logger.info("extracting load statements in %s", template_string)
 
     re_load_sources = re.compile(r"\\LOAD{(.*?)}", re.M)
 
@@ -231,7 +249,19 @@ def extract_loads_template(latex_jinja_env, template_string):
             #data[k] = compute_value(latex_jinja_env, v, {}, False)
 
             import oda 
-            data[k] = eval(v)
+
+            # try:
+            #     data[k] = eval(v)
+            # except:
+            with tempfile.NamedTemporaryFile(suffix=".py") as f:
+                f.write(v.encode())
+                f.flush()
+                logger.info("storing module as %s", f.name)
+                spec = importlib.util.spec_from_file_location(k, f.name)
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+                data[k] = module
+
 
             logger.info("loading %s from %s as %s", k, v, data[k])
 
