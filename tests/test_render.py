@@ -73,7 +73,7 @@ def test_render_call():
         else:
             return num
 
-    latex_jinja_env.globals['lib']=dict(gcn=dict(cite=gcn_cite))
+    latex_jinja_env.globals['lib'] = dict(gcn=dict(cite=gcn_cite))
 
     rendering=render.render_draft(
                         latex_jinja_env,

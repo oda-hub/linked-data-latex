@@ -1,6 +1,7 @@
 from __future__ import print_function
 import importlib
 import tempfile
+import traceback
 from jinja2.exceptions import TemplateRuntimeError
 from jinja2.ext import Extension
 from jinja2 import nodes
@@ -160,6 +161,7 @@ def compute_value(latex_jinja_env, key, data, allow_incomplete=True):
         d_value = rtemplate.render(data)  # .encode('utf8')
     except Exception as e:
         print("unable to render", key, e)
+        traceback.print_exc()
 
         d_value = "XXX"
         # if not allow_incomplete:
