@@ -90,7 +90,7 @@ def extract_referenced_keys(template_string):
     reduced = []
     for k in re.findall(r"\\VAR{(.*?)}", template_string):
         if not k in reduced:
-            print("found", k)
+            logger.info("found key %s", k)
             reduced.append(k)
     return reduced
 
@@ -250,7 +250,10 @@ def extract_loads_template(latex_jinja_env, template_string):
             # load as template
             #data[k] = compute_value(latex_jinja_env, v, {}, False)
 
-            import oda 
+            try:
+                import oda 
+            except Exception as e:
+                pass
 
             # try:
             #     data[k] = eval(v)

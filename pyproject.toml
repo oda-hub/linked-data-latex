@@ -19,4 +19,6 @@ pyyaml = ">=5"
 
 [tool.poetry.scripts]
 ddpaper = "ddpaper.generate:main"
+ld-latex = "ddpaper.generate:main"
+
 

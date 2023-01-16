@@ -1,6 +1,6 @@
 from __future__ import print_function
 
-import sys
+from rich.logging import RichHandler
 import argparse
 from ddpaper.data import setup_yaml
 from ddpaper.render import get_latex_jinja_env
@@ -9,18 +9,20 @@ from ddpaper.data import load_data_directory, load_data_ddobject
 from ddpaper.render import render_definitions, render_draft, render_update, render_validate
 
 import logging
-import coloredlogs
+
+from nb2workflow.nbadapter import NotebookAdapter
+
 
 
 logger = logging.getLogger('ddpaper.generate')
 
 
-try:
-    from dataanalysis import core
-    dda_available = True
-except ImportError:
-    logger.warning("no DDA")
-    dda_available = False
+# try:
+#     from dataanalysis import core
+#     dda_available = True
+# except ImportError:
+#     logger.warning("no DDA")
+#     dda_available = False
 
 
 def main():
@@ -30,7 +32,8 @@ def main():
     parser.add_argument("-d", "--data", default="./data")
     parser.add_argument("--draft", action='store_true', default=False)
     parser.add_argument("--debug", action='store_true', default=False)
-    parser.add_argument("--mode", default='draft')
+    parser.add_argument("--quiet", action='store_true', default=False)
+    parser.add_argument("--mode", default='draft', help="draft, macros, update, validate")
 
     parser.add_argument('-a', dest='assume', metavar='ASSUME', type=str, help='...', nargs='+', action='append',
                         default=[])
@@ -39,23 +42,35 @@ def main():
     parser.add_argument('-l', dest='load', metavar='LOAD', type=str, help='...', nargs='+', action='append',
                         default=[])
     parser.add_argument("-w", "--write-caches",
-                        dest="writecaches", action='store_true', default=False)
+                        dest="writecaches", action='store_true', default=False)    
+    parser.add_argument("-L", "--log-string", dest='logstring', default=None)
 
     args = parser.parse_args()
 
-    if args.debug:
-        logging.basicConfig(level=logging.DEBUG)
-        coloredlogs.install(
-            level='DEBUG', fmt='%(asctime)s %(hostname)s %(name)20s[%(process)d] %(levelname)10s %(message)s')
-        logger.debug('debug logging enabled')
-    else:
-        logging.basicConfig(level=logging.INFO)
-        coloredlogs.install(
-            level='INFO', fmt='%(asctime)s %(hostname)s %(name)20s[%(process)d] %(levelname)10s %(message)s')
-        logger.debug('info logging enabled')
 
-    if args.writecaches and dda_available:
-        core.global_readonly_caches = False
+    if args.debug:
+        level = 'DEBUG'
+    else:
+        level = 'INFO'
+
+    logging.shutdown()
+    logging.basicConfig(
+        level=level, 
+        # handlers=[RichHandler(highlighter=None, markup=True, level="INFO")],
+        # datefmt="[%X]",
+        force=True,
+        # format="%(message)s"
+    )
+
+    
+    if args.logstring:
+        import odafunction.logs
+        odafunction.logs.app_logging.parse_logspec(args.logstring)
+        odafunction.logs.app_logging.setup_tree()
+
+        
+    # if args.writecaches and dda_available:
+    #     core.global_readonly_caches = False
 
     latex_jinja_env = get_latex_jinja_env()
     setup_custom_filters(latex_jinja_env)
@@ -99,6 +114,12 @@ def main():
         with open(args.output, "w") as output_file:
             output_file.write(output)
 
+
+    
+    # logging.getLogger().info("starting")
+    # import logging_tree
+    # logging_tree.printout()
+    
     # bind dda, json, sources
 
 
