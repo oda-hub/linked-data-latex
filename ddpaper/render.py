@@ -155,7 +155,12 @@ def compute_value(latex_jinja_env, key, data, allow_incomplete=True):
 
     logger.info('compute value for key %s', newkey)
 
-    rtemplate = latex_jinja_env.from_string("\VAR{"+newkey+"}")
+    try:
+        rtemplate = latex_jinja_env.from_string("\VAR{"+newkey+"}")
+    except:
+        logger.exception('unable to parse template %s', newkey)
+        raise
+
 
     try:
         d_value = rtemplate.render(data)  # .encode('utf8')

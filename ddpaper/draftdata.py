@@ -1,6 +1,10 @@
 # from collections import defaultdict
 
 import yaml
+
+from astropy.io.misc import yaml
+# yaml.load(stream, Loader=AstropyLoader)
+
 import os
 import astropy.units as u
 
@@ -15,10 +19,15 @@ class DraftData(object):
     def __init__(self, section="results"):
         self.section = section
 
-    def __enter__(self):
+    @property
+    def filename(self):
+        return os.path.join(draft_dir, self.section + ".yaml")
+
+    def __enter__(self):        
         try:
-            self.data = yaml.load(open(draft_dir + "/" + self.section + ".yaml"), Loader=yaml.Loader)
-        except:
+            self.data = yaml.load(open(self.filename))
+        except Exception as e:
+            logger.info("can not open %s due to %s %s, will create a new one", self.filename, e, repr(e))
             self.data = {}
         if self.data is None:
             self.data = {}
@@ -26,8 +35,8 @@ class DraftData(object):
 
     def __exit__(self, _type, value, traceback):
         if self.data is not None:
-            yaml.dump(self.data, open(
-                draft_dir + "/" + self.section + ".yaml", "w"))
+            yaml.dump(self.data, 
+                      open(self.filename, "w"))
 
 
 def dump_notebook_globals(target, globs):
