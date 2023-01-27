@@ -11,7 +11,9 @@ from ddpaper.filters import setup_custom_filters
 import os
 import re
 import jinja2
-import ruamel.yaml as yaml
+
+from .yaml import yaml
+
 import numpy as np
 from jinja2.utils import concat
 
@@ -250,7 +252,7 @@ def extract_loads_template(latex_jinja_env, template_string):
 
     for source_fn in re_load_sources.findall(template_string):
         logger.info("loading from %s", source_fn)
-        for k,v in yaml.load(open(source_fn), Loader=yaml.Loader).items():
+        for k,v in yaml.load(open(source_fn)).items():
 
             # load as template
             #data[k] = compute_value(latex_jinja_env, v, {}, False)
@@ -288,7 +290,7 @@ def preproc_template(template_string):
     preprocs = []
 
     for preproc_source_fn in re_preproc_sources.findall(template_string):
-        for re_in, re_out in yaml.load(open(preproc_source_fn), Loader=yaml.Loader).items():
+        for re_in, re_out in yaml.load(open(preproc_source_fn)).items():
             logger.info('applying preproc %s => %s', re_in, re_out)
 
             for g in re.findall("("+re_in+")", template_string):

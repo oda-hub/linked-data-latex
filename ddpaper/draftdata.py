@@ -1,9 +1,6 @@
 # from collections import defaultdict
 
-import yaml
-
-from astropy.io.misc import yaml
-# yaml.load(stream, Loader=AstropyLoader)
+from .yaml import yaml
 
 import os
 import astropy.units as u
@@ -39,36 +36,42 @@ class DraftData(object):
                       open(self.filename, "w"))
 
 
-def dump_notebook_globals(target, globs):
+def dump_notebook_globals(target, globs, selected=None):
     from io import StringIO
     from IPython import get_ipython
     ipython = get_ipython()
     s = ipython.magic("who_ls")
 
-    from ddpaper.data import setup_yaml
-    setup_yaml()
-
     with DraftData(target) as t_data:
         logger.info("storing in %s", target)
 
         for n in s:
-            v = globs[n]
-            if isinstance(v, u.Quantity):
-                logger.info(n, v)
-
+            logger.debug("found global %s", n)
+            if selected is not None and n not in selected:
+                logger.debug("skipping")
+            else:
+                v = globs[n]
+                logger.info("storing %s = %s", n, v)
+                
                 try:
                     s = StringIO()
                     yaml.dump(v, s)
+                    logger.info("%s = %s can be represented as %s", n, v, s.getvalue())
                     t_data[n] = v
-                except:
+                except Exception as e:
+                    logger.info("failed to represent %s because of %s", v, e)
                     continue
 
-            #    t_data[n] = {
-            #        v.unit.to_string(): v.value,
-            #        v.unit.to_string().replace(" ", "").strip(): v.value,
-            #        "object_type":"astropy units",
-            #    }
+                # if not isinstance(v, float):
+                #     continue
 
-            if isinstance(v, float):
-                logger.info(n, v)
-                t_data[n] = v
+                
+
+def load_globals(target, globs):
+    with DraftData(target) as t_data:
+        for k, v in t_data.items():
+            if k in globs and globs[k] != v:
+                logger.warning("overwriting %s = %s with %s", k, repr(globs[k])[:100], repr(v)[:100])
+            else:
+                logger.info("loading %s = %s", k, repr(v)[:100])
+            globs[k] = v    

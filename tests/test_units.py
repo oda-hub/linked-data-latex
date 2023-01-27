@@ -1,4 +1,5 @@
 import ddpaper.data
+from ddpaper.yaml import yaml
 
 
 def test_units():
@@ -41,16 +42,12 @@ def test_render_units():
 
 
 def test_units_unpickle():
-    from ddpaper.data import setup_yaml
-
     from astropy import units as u
     
     try:
         from StringIO import StringIO
     except ImportError:
         from io import StringIO
-
-    yaml = setup_yaml()
 
     s=StringIO()
     r=dict(var=1*u.keV)
@@ -94,14 +91,10 @@ def test_units_unpickle():
 
 
 def test_skycoord_unpickle():
-    from ddpaper.data import setup_yaml
-
     from astropy import units as u
     from astropy import coordinates as coord
     
     from io import StringIO
-
-    yaml = setup_yaml()
 
     s = StringIO()
     r = dict(var=coord.SkyCoord(83, 22, unit='deg'))
