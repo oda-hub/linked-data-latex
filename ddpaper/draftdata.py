@@ -62,9 +62,7 @@ def dump_notebook_globals(target, globs, selected=None):
                     logger.info("failed to represent %s because of %s", v, e)
                     continue
 
-                # if not isinstance(v, float):
-                #     continue
-
+                
                 
 
 def load_globals(target, globs):
