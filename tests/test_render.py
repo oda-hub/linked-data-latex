@@ -164,6 +164,8 @@ def test_render_get():
     
     with open('mymodule.py', "w") as f:
         f.write('''
+__all__ = ["a_float", "a_string"]
+
 a_float=1.234
 a_string="bla"
 a_func=lambda x:x+1
@@ -172,8 +174,8 @@ a_func=lambda x:x+1
     rendering=render.render_draft(
                         latex_jinja_env,
                         r"""
-                            \GET{mymodule.py}
-                            \VAR{mymodule.a_float | round(1)} \VAR{mymodule.a_string} \VAR{mymodule.a_func(2)}
+                            \LOAD{mymodule.py}
+                            \VAR{mymodule.a_float | round(1)} \VAR{mymodule.a_string} \VAR{mymodule.a_func(2)} \VAR{a_float | round(1)} \VAR{a_string}
                         """,
                         {},
                         write_header=False,
@@ -181,4 +183,4 @@ a_func=lambda x:x+1
 
     print("rendering",rendering)
 
-    assert rendering.strip() == "1.2 bla 3"
+    assert rendering.strip() == "1.2 bla 3 1.2 bla"
