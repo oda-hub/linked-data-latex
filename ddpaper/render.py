@@ -275,7 +275,7 @@ def extract_loads_template(latex_jinja_env, template_string):
 
                 logger.info("loading %s from %s as %s", k, v, data[k])
         elif source_fn.endswith(".py"):
-            name = re.search("(.*?).py", source_fn).group(1)
+            name = re.search("(.*?).py", os.path.basename(source_fn)).group(1)
             logger.info("loading from %s as %s", source_fn, name)
 
             spec = importlib.util.spec_from_file_location(name, source_fn)
