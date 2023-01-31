@@ -152,3 +152,33 @@ def test_render_oda():
     print("rendering",rendering)
 
     assert rendering.strip() == "1231"
+
+
+
+def test_render_get():
+    import ddpaper.render as render
+    import ddpaper.filters as filters
+
+    latex_jinja_env = render.get_latex_jinja_env()
+    filters.setup_custom_filters(latex_jinja_env)
+    
+    with open('mymodule.py', "w") as f:
+        f.write('''
+a_float=1.234
+a_string="bla"
+a_func=lambda x:x+1
+        ''')
+
+    rendering=render.render_draft(
+                        latex_jinja_env,
+                        r"""
+                            \GET{mymodule.py}
+                            \VAR{mymodule.a_float | round(1)} \VAR{mymodule.a_string} \VAR{mymodule.a_func(2)}
+                        """,
+                        {},
+                        write_header=False,
+                    )
+
+    print("rendering",rendering)
+
+    assert rendering.strip() == "1.2 bla 3"

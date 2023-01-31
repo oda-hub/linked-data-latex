@@ -5,7 +5,7 @@ import astropy.units as u
 import astropy.coordinates as coord
 import glob
 import json
-import yaml
+from .yaml import yaml
 import sys
 import re
 import os
@@ -39,13 +39,13 @@ def load_data_directory(rootdir="./data", data=None):
             if 'json' in suffix:
                 data[key] = json.load(open(fn))
             else:
-                data[key] = yaml.load(open(fn), Loader=yaml.Loader)
+                data[key] = yaml.load(open(fn))
 
     for suffix in ".yaml", ".yml":
         for fn in glob.glob(rootdir+"/*"+suffix):
             key=os.path.normpath(fn).replace(rootdir+"/","").replace(suffix,"")
             logger.info("loading data from %s as %s",fn,key)
-            data[key]=yaml.load(open(fn), Loader=yaml.Loader)
+            data[key]=yaml.load(open(fn))
             
     return data
 
@@ -113,33 +113,6 @@ class DynUnitDict(object):
         else:
             return self.interpret_unit(item)
 
-
-def setup_yaml():
-    from astropy.io.misc import yaml
-    return yaml
-
-    # def quantity_constructor(loader, node):
-    #     value = loader.construct_scalar(node)
-    #     value, unit = re.search("(.*?)__(.*)", value).groups()
-    #     return u.Quantity(value, unit=u.Unit(unit))
-
-    # def quantity_representer(dumper, data):
-    #     return dumper.represent_scalar(u'!Quantity', u'%.5lg__%s' % (data.value, data.unit.to_string()))
-
-    # def unit_representer(dumper, data):
-    #     return quantity_representer(dumper, 1.*data)
-    
-    # yaml.add_representer(u.Quantity, quantity_representer)
-    # yaml.add_representer(const.Constant, quantity_representer)
-    # yaml.add_representer(u.Unit, unit_representer)
-    # yaml.add_representer(u.core.CompositeUnit, unit_representer)    
-    # yaml.add_constructor('!Quantity', quantity_constructor)
-
-    # yaml.add_representer(coord.sky_coordinate.SkyCoord, skycoord_representer)        
-    # yaml.add_constructor('!SkyCoord', skycoord_constructor)
-
-    # yaml.add_representer(np.core.multiarray, array_representer)        
-    # # yaml.add_constructor('!SkyCoord', skycoord_constructor)
 
 
 def data_assertion(data):

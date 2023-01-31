@@ -207,6 +207,8 @@ def render_definitions(latex_jinja_env, template_string, data):
 \def\LOAD#1{%
 }
 
+\def\GET#1{%
+}
 % extracted definitions
 
 """
@@ -243,6 +245,29 @@ def render_definitions(latex_jinja_env, template_string, data):
     return output
 
 
+def extract_get_template(latex_jinja_env, template_string):
+    logger.info("extracting load statements in %s", template_string)
+
+    re_sources = re.compile(r"\\GET{(.*?)}", re.M)
+
+    data = {}
+
+    for source_fn in re_sources.findall(template_string):
+        name = re.search("(.*?).py", source_fn).group(1)
+        logger.info("loading from %s as %s", source_fn, name)
+
+        spec = importlib.util.spec_from_file_location(name, source_fn)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        data[name] = module
+        
+
+    template_string = re_sources.sub("", template_string)
+
+    return template_string, data
+
+
+
 def extract_loads_template(latex_jinja_env, template_string):
     logger.info("extracting load statements in %s", template_string)
 
@@ -254,17 +279,11 @@ def extract_loads_template(latex_jinja_env, template_string):
         logger.info("loading from %s", source_fn)
         for k,v in yaml.load(open(source_fn)).items():
 
-            # load as template
-            #data[k] = compute_value(latex_jinja_env, v, {}, False)
-
             try:
                 import oda 
             except Exception as e:
                 pass
 
-            # try:
-            #     data[k] = eval(v)
-            # except:
             with tempfile.NamedTemporaryFile(suffix=".py") as f:
                 f.write(v.encode())
                 f.flush()
@@ -321,6 +340,9 @@ def render_draft(latex_jinja_env, template_string, data, write_header=True):
 
     template_string, loaded_data = extract_loads_template(
         latex_jinja_env, template_string)
+
+    template_string, loaded_data = extract_get_template(
+        latex_jinja_env, template_string)    
 
     data = {**data, **loaded_data}
 
